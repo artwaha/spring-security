@@ -32,9 +32,11 @@ public class InayaService {
 
 
             if (response.code() == 200) {
-
+                System.out.println("Raw JSON ->" + response.body().toString());
                 JSONObject json = new JSONObject(response.body().toString());
-                System.out.println("Ma Dude =>" + String.valueOf(json));
+                Integer code = json.getInt("code");
+
+                System.out.println("Ma Dude Code =>" + code);
 
                 ObjectMapper objectMapper = new ObjectMapper();
                 PatientDto resp = objectMapper.readValue(response.body().string(), PatientDto.class);
