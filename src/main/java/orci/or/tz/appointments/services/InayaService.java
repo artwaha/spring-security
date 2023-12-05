@@ -15,40 +15,26 @@ public class InayaService {
     @Value("${orci.inaya.api.url}")
     private String inayaUrl;
 
-
-    public PatientDto GetPatient(String regNo) throws IOException {
+    public String GetPatient(String regNo) throws IOException {
+        String inayaUrlRegNOEndpoint = inayaUrl+regNo;
 
         OkHttpClient client = new OkHttpClient();
-        MediaType mediaType = MediaType.parse("text/plain");
-        RequestBody body = RequestBody.create(mediaType, "");
-        Request request = new Request.Builder().url(inayaUrl + regNo).method("GET", null).build();
-        Response response = null; // Initialize the response outside the try block
-        try {
-            response = client.newCall(request).execute();
-            if (!response.isSuccessful()) {
-                throw new IOException("Unexpected response code: " + response.code());
-            }
-            System.out.println("Ma code =>" + response.code());
+        Request request = new Request.Builder()
+                .url(inayaUrlRegNOEndpoint)
+                .build();
+        Response response = client.newCall(request).execute();
 
-
-            if (response.code() == 200) {
-                System.out.println("Raw JSON ->" + response.body().toString());
-                JSONObject json = new JSONObject(response.body().toString());
-                Integer code = json.getInt("code");
-
-                System.out.println("Ma Dude Code =>" + code);
-
-                ObjectMapper objectMapper = new ObjectMapper();
-                PatientDto resp = objectMapper.readValue(response.body().string(), PatientDto.class);
-
-                return resp;
-            }else{
+        try{
+            if (response.isSuccessful() && response.code() == 200){
+                return response.body().string();
+            } else {
                 return null;
             }
-
-        } catch (Exception e) {
-            System.out.println("Ma Error =>" + e.getMessage());
+        } catch (IOException e) {
+            System.out.println(e.getMessage());
             return null;
         }
+
     }
+
 }

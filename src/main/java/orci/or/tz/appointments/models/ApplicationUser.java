@@ -53,6 +53,9 @@ public class ApplicationUser extends Auditable<String> implements Serializable {
     @Column(name = "valid_until", nullable = true)
     private LocalDateTime validUntil;
 
+    @Column(name = "status", nullable = true)
+    private String status;
+
 
     public ApplicationUser(Long id) {
         super();

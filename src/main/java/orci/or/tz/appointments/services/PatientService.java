@@ -29,5 +29,9 @@ public class PatientService {
         return patientRepo.findById(id);
     }
 
+    public Optional<ApplicationUser> GetPatientByRegistrationNumber(String registrationNumber) {
+        return patientRepo.findByRegistrationNumber(registrationNumber);
+    }
+
 
 }

@@ -4,7 +4,7 @@ import lombok.Data;
 
 @Data
 public class PatientDto {
-    private String regNo;
+    private String registrationNumber;
     private String fullName;
     private String mobile;
     private String gender;

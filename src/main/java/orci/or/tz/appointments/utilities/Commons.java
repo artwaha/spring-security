@@ -1,5 +1,6 @@
 package orci.or.tz.appointments.utilities;
 
+import orci.or.tz.appointments.dto.patient.PatientDto;
 import orci.or.tz.appointments.dto.patient.PatientResponseDto;
 import orci.or.tz.appointments.models.ApplicationUser;
 import org.modelmapper.ModelMapper;
@@ -17,6 +18,13 @@ public class Commons {
         ModelMapper modelMapper = mapper.getModelMapper();
         PatientResponseDto d = modelMapper.map(p, PatientResponseDto.class);
         return d;
+    }
+
+
+    public PatientDto GeneratePatientDTO(ApplicationUser p) {
+        ModelMapper modelMapper = mapper.getModelMapper();
+        PatientDto patient = modelMapper.map(p, PatientDto.class);
+        return patient;
     }
 
 
