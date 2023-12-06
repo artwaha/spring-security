@@ -10,7 +10,6 @@ import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 
@@ -29,7 +28,7 @@ public class Commons {
     private NotificationService notificationService;
 
 
-    public void GenerateOTP(ApplicationUser u){
+    public void GenerateOTP(ApplicationUser u) {
 
         String password = generator.generateRandomNumbers(6);
         u.setOtp(password);
@@ -42,7 +41,6 @@ public class Commons {
         sms.setSms(msg);
         sms.setMobile(u.getMobile());
         notificationService.SendSMSToQueue(sms);
-
 
     }
 
