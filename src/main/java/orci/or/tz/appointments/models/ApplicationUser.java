@@ -56,6 +56,9 @@ public class ApplicationUser extends Auditable<String> implements Serializable {
     @Column(name = "status", nullable = true)
     private String status;
 
+    @Column(name = "confirmed")
+    private Boolean confirmed;
+
 
     public ApplicationUser(Long id) {
         super();

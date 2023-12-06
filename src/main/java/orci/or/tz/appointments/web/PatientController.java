@@ -61,9 +61,7 @@ public class PatientController implements PatientApi {
                     patientToBeSavedInAppointmentDB.setFullName(jsonNode.path("data").path("fullName").asText(null));
 
                     String dobString = jsonNode.path("data").path("dob").asText(null);
-                    System.out.println("DATE CHECKER ->" + dobString);
-                    System.out.println("DATE CHECKER ->" + dobString);
-                    System.out.println("DATE CHECKER ->" + dobString);
+
 
                     if (dobString != null) {
                         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
@@ -74,7 +72,7 @@ public class PatientController implements PatientApi {
                     String genderString = jsonNode.path("data").path("gender").asText(null);
                     GenderEnum gender = (genderString != null) ? GenderEnum.valueOf(genderString.toUpperCase()) : null;
                     patientToBeSavedInAppointmentDB.setGender(gender);
-
+                    patientToBeSavedInAppointmentDB.setConfirmed(false);
                     patientToBeSavedInAppointmentDB.setMobile(jsonNode.path("data").path("mobile").asText(null));
                     patientToBeSavedInAppointmentDB.setRegistrationNumber(regNo);
                     patientToBeSavedInAppointmentDB.setBillingCategory(jsonNode.path("data").path("billingCategory").asText(null));
