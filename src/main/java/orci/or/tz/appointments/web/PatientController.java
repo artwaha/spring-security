@@ -2,6 +2,7 @@ package orci.or.tz.appointments.web;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import orci.or.tz.appointments.dto.patient.PatientDto;
+import orci.or.tz.appointments.dto.patient.PatientUpdateMobileDto;
 import orci.or.tz.appointments.models.ApplicationUser;
 import orci.or.tz.appointments.enums.GenderEnum;
 import orci.or.tz.appointments.exceptions.OperationFailedException;
@@ -12,6 +13,8 @@ import orci.or.tz.appointments.utilities.Commons;
 import orci.or.tz.appointments.web.api.PatientApi;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.util.pattern.PathPattern;
 import com.fasterxml.jackson.databind.JsonNode;
@@ -97,6 +100,35 @@ public class PatientController implements PatientApi {
 
         PatientDto patient = commons.GeneratePatientDTO(patientFromDB.get());
         return ResponseEntity.ok(patient);
+    }
+
+    @Override
+    public ResponseEntity<PatientDto> UpdatePatientMobileNumber(@RequestBody PatientUpdateMobileDto patientUpdateMobileDto) throws ResourceNotFoundException, IOException {
+        String regNo = patientUpdateMobileDto.getRegistrationNumber();
+        String mobile = patientUpdateMobileDto.getMobile();
+        Optional<ApplicationUser> user = patientService.GetPatientByRegistrationNumber(regNo);
+
+        try {
+            if (!user.isPresent()) {
+                throw  new ResourceNotFoundException("Patient Not Found");
+            } else {
+                ApplicationUser patient = user.get();
+                patient.setMobile(mobile);
+                patientService.SavePatient(patient);
+                commons.GenerateOTP(patient);
+
+                PatientDto customizedPatient = commons.GeneratePatientDTO(patient);
+                System.out.println("OUR PATIENT ->" + customizedPatient);
+                System.out.println("OUR PATIENT ->" + customizedPatient);
+                System.out.println("OUR PATIENT ->" + customizedPatient);
+                return ResponseEntity.ok(customizedPatient);
+            }
+        } catch (Exception e) {
+            e.getMessage();
+            throw new IOException("There is internal operation errors");
+        }
+
+
     }
 
 }
