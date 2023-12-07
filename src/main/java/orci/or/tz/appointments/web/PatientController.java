@@ -96,6 +96,8 @@ public class PatientController implements PatientApi {
                     throw new OperationFailedException("The operation failed due to a specific condition");
                 }
             }
+        }else{
+
         }
 
         PatientDto patient = commons.GeneratePatientDTO(patientFromDB.get());
@@ -114,6 +116,7 @@ public class PatientController implements PatientApi {
             } else {
                 ApplicationUser patient = user.get();
                 patient.setMobile(mobile);
+                patient.setConfirmed(true);
                 patientService.SavePatient(patient);
                 commons.GenerateOTP(patient);
 

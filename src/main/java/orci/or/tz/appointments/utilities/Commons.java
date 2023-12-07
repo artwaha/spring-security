@@ -11,6 +11,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.time.temporal.ChronoField;
 
 
 @Component
@@ -32,7 +34,8 @@ public class Commons {
 
         String password = generator.generateRandomNumbers(6);
         u.setOtp(password);
-        u.setValidUntil(LocalDateTime.now().plusHours(24));
+        u.setValidUntil(LocalDateTime.now().toLocalDate().atTime(23,59,59));
+
         patientService.SavePatient(u);
         String msg = "Ndugu " + u.getFullName()
                 + ", Tafadhali tumia nenosiri hili "
