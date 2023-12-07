@@ -4,6 +4,9 @@ import orci.or.tz.appointments.models.ApplicationUser;
 import orci.or.tz.appointments.repository.PatientRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.core.userdetails.User;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -16,6 +19,19 @@ public class PatientService {
     private PatientRepository patientRepo;
 
 
+    public UserDetails LoadUserByRegno(String username) throws UsernameNotFoundException {
+
+        User.UserBuilder builder = null;
+        ApplicationUser user = patientRepo.findByRegistrationNumber(username).orElse(null);
+        if (user == null) {
+            throw new UsernameNotFoundException(username);
+        } else {
+            builder = User.withUsername(username);
+            builder.password("");
+            builder.roles("");
+        }
+        return builder == null ? null : builder.build();
+    }
     public ApplicationUser SavePatient(ApplicationUser p){
         return  patientRepo.save(p);
     }

@@ -118,9 +118,6 @@ public class PatientController implements PatientApi {
                 commons.GenerateOTP(patient);
 
                 PatientDto customizedPatient = commons.GeneratePatientDTO(patient);
-                System.out.println("OUR PATIENT ->" + customizedPatient);
-                System.out.println("OUR PATIENT ->" + customizedPatient);
-                System.out.println("OUR PATIENT ->" + customizedPatient);
                 return ResponseEntity.ok(customizedPatient);
             }
         } catch (Exception e) {
