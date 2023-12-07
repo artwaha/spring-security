@@ -9,6 +9,7 @@ import orci.or.tz.appointments.exceptions.OperationFailedException;
 import orci.or.tz.appointments.exceptions.ResourceNotFoundException;
 import orci.or.tz.appointments.services.InayaService;
 import orci.or.tz.appointments.services.PatientService;
+import orci.or.tz.appointments.services.RefreshTokenServiceImpl;
 import orci.or.tz.appointments.utilities.Commons;
 import orci.or.tz.appointments.web.api.PatientApi;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,6 +21,7 @@ import org.springframework.web.util.pattern.PathPattern;
 import com.fasterxml.jackson.databind.JsonNode;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
 import java.io.IOException;
@@ -36,6 +38,9 @@ public class PatientController implements PatientApi {
 
     @Autowired
     private Commons commons;
+
+    @Autowired
+    private RefreshTokenServiceImpl refreshTokenServiceImpl;
 
 
     @Override
@@ -96,13 +101,59 @@ public class PatientController implements PatientApi {
                     throw new OperationFailedException("The operation failed due to a specific condition");
                 }
             }
+
         }else{
 
-        }
+            ApplicationUser user = patientFromDB.get();
+            System.out.println("APPLICATION USER REGISTERD 0-> "+ user );
+            System.out.println("APPLICATION USER REGISTERD 0-> "+ user );
+            System.out.println("APPLICATION USER REGISTERD 0-> "+ user );
 
-        PatientDto patient = commons.GeneratePatientDTO(patientFromDB.get());
-        return ResponseEntity.ok(patient);
+            if (Boolean.FALSE.equals(user.getConfirmed())) {
+                user.setConfirmed(false);
+                patientService.SavePatient(user);
+                PatientDto patientDto = commons.GeneratePatientDTO(user);
+                System.out.println("APPLICATION USER REGISTERD 1-> "+ user );
+                System.out.println("APPLICATION USER REGISTERD 1-> "+ user );
+                System.out.println("APPLICATION USER REGISTERD 1-> "+ user );
+                return ResponseEntity.ok(patientDto);
+            } else {
+                System.out.println("APPLICATION USER REGISTERD 2-> "+ user );
+                System.out.println("APPLICATION USER REGISTERD 2-> "+ user );
+                System.out.println("APPLICATION USER REGISTERD 2-> "+ user );
+                if (user.getOtp() != null) {
+                    System.out.println("APPLICATION USER REGISTERD 3-> "+ user );
+                    System.out.println("APPLICATION USER REGISTERD 3-> "+ user );
+                    System.out.println("APPLICATION USER REGISTERD 3-> "+ user );
+                    if (!user.getValidUntil().isAfter(LocalDateTime.now())) {
+                        // validation done here
+                        user.setConfirmed(true);
+                        patientService.SavePatient(user);
+                        Long userId = user.getId();
+                        // Genarate the token for our user
+                         refreshTokenServiceImpl.createRefreshToken(userId);
+                        PatientDto patientDto = commons.GeneratePatientDTO(user);
+                        return ResponseEntity.ok(patientDto);
+                    }else{
+                        // I have to generate the token
+                        user.setOtp(null);
+                        patientService.SavePatient(user);
+                        PatientDto patientDto = commons.GeneratePatientDTO(user);
+                        return ResponseEntity.ok(patientDto);
+                    }
+                } else {
+                    System.out.println("APPLICATION USER REGISTERD LAST-> "+ user );
+                    System.out.println("APPLICATION USER REGISTERD LAST-> "+ user );
+                    System.out.println("APPLICATION USER REGISTERD LAST-> "+ user );
+                    PatientDto patientDto = commons.GeneratePatientDTO(user);
+                    return ResponseEntity.ok(patientDto);
+                }
+            }
+
+        }
     }
+
+
 
     @Override
     public ResponseEntity<PatientDto> UpdatePatientMobileNumber(@RequestBody PatientUpdateMobileDto patientUpdateMobileDto) throws ResourceNotFoundException, IOException {

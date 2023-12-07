@@ -11,4 +11,5 @@ public class PatientDto {
     private String dob;
     private String billingCategory;
     private String status;
+    private boolean confirmed;
 }
