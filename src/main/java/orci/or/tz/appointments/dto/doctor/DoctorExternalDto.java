@@ -3,7 +3,6 @@ package orci.or.tz.appointments.dto.doctor;
 import lombok.Data;
 import orci.or.tz.appointments.enums.DoctorStatusEnum;
 
-import javax.persistence.Column;
 
 @Data
 public class DoctorExternalDto {
@@ -16,4 +15,4 @@ public class DoctorExternalDto {
     private boolean thursday;
     private boolean friday;
 }
-}
+
