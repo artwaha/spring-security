@@ -1,30 +1,27 @@
+package orci.or.tz.appointments.web.internal;
 
-package orci.or.tz.appointments.web.doctor.internal;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import orci.or.tz.appointments.dto.doctor.DoctorExternalDto;
+import orci.or.tz.appointments.exceptions.ResourceNotFoundException;
+import orci.or.tz.appointments.models.Doctor;
+import orci.or.tz.appointments.services.DoctorService;
+import orci.or.tz.appointments.services.InayaService;
+import orci.or.tz.appointments.utilities.Commons;
+import orci.or.tz.appointments.utilities.GenericResponse;
+import orci.or.tz.appointments.web.internal.api.Doctor2Api;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.RestController;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.http.ResponseEntity;
-
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
-
-import orci.or.tz.appointments.dto.doctor.external.DoctorExternalDto;
-import orci.or.tz.appointments.services.DoctorService;
-import orci.or.tz.appointments.services.InayaService;
-import orci.or.tz.appointments.utilities.Commons;
-import orci.or.tz.appointments.utilities.GenericResponse;
-import orci.or.tz.appointments.web.doctor.internal.api.*;
-import orci.or.tz.appointments.exceptions.*;
-import orci.or.tz.appointments.models.Doctor;
-import org.springframework.web.bind.annotation.RestController;
-
 
 @RestController
-public class DoctorInternalController implements DoctorInternalApi {
+public class DoctorInternalController implements Doctor2Api {
 
     @Autowired
     private DoctorService doctorService;
@@ -60,14 +57,14 @@ public class DoctorInternalController implements DoctorInternalApi {
                                 doctor.setDoctorName(fullName);
                                 doctor.setInayaId(inayaId);
                                 doctorService.SaveDoctor(doctor);
-                                DoctorExternalDto doctorExternalDto = commons.GenerateDoctorExternalDto(doctor);
+                                DoctorExternalDto doctorExternalDto = commons.GenerateDoctorDto(doctor);
                                 resp.add(doctorExternalDto);
                             } else {
                                 Optional<Doctor> doctor = doctorService.GetDoctorByInayaId(inayaId);
                                 if (doctor.isPresent()) {
                                     throw new ResourceNotFoundException("The Doctor with the provided Id does not exist in AppointmentDB");
                                 }
-                                DoctorExternalDto doctorExternalDto = commons.GenerateDoctorExternalDto(doctor.get());
+                                DoctorExternalDto doctorExternalDto = commons.GenerateDoctorDto(doctor.get());
                                 resp.add(doctorExternalDto);
                             }
                         }
@@ -91,7 +88,7 @@ public class DoctorInternalController implements DoctorInternalApi {
 
             List<Doctor> doctors = doctorService.GetAllDoctors(pageRequest);
             for (Doctor doctor : doctors) {
-                DoctorExternalDto doctorExternalDto = commons.GenerateDoctorExternalDto(doctor);
+                DoctorExternalDto doctorExternalDto = commons.GenerateDoctorDto(doctor);
                 resp.add(doctorExternalDto);
             }
 

@@ -8,11 +8,11 @@ import java.util.Optional;
 
 public interface RefreshTokenService {
 
-    public RefreshToken createRefreshToken(Long userId);
+    RefreshToken createRefreshToken(Long userId);
 
     RefreshToken verifyExpiration(RefreshToken token);
 
-    public int deleteByUserId(Long userId);
+    int deleteByUserId(Long userId);
 
-    public Optional<RefreshToken> findByToken(String token);
+    Optional<RefreshToken> findByToken(String token);
 }

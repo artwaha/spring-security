@@ -1,4 +1,4 @@
-package orci.or.tz.appointments.web.patient.external;
+package orci.or.tz.appointments.web.external;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import orci.or.tz.appointments.dto.patient.PatientDto;
@@ -11,7 +11,7 @@ import orci.or.tz.appointments.services.InayaService;
 import orci.or.tz.appointments.services.PatientService;
 import orci.or.tz.appointments.services.RefreshTokenServiceImpl;
 import orci.or.tz.appointments.utilities.Commons;
-import orci.or.tz.appointments.web.patient.external.api.*;
+import orci.or.tz.appointments.web.external.api.PatientApi;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RequestBody;

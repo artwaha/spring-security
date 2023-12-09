@@ -1,10 +1,12 @@
 
-package orci.or.tz.appointments.web.doctor.external;
+package orci.or.tz.appointments.web.external;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+import orci.or.tz.appointments.dto.doctor.DocExternalDto;
+import orci.or.tz.appointments.web.external.api.DoctorApi;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.http.ResponseEntity;
@@ -12,19 +14,17 @@ import org.springframework.http.ResponseEntity;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import orci.or.tz.appointments.dto.doctor.external.DoctorExternalDto;
 import orci.or.tz.appointments.services.DoctorService;
 import orci.or.tz.appointments.services.InayaService;
 import orci.or.tz.appointments.utilities.Commons;
 import orci.or.tz.appointments.utilities.GenericResponse;
-import orci.or.tz.appointments.web.doctor.external.api.*;
 import orci.or.tz.appointments.exceptions.*;
 import orci.or.tz.appointments.models.Doctor;
 import org.springframework.web.bind.annotation.RestController;
 
 
 @RestController
-public class DoctorExternalController implements DoctorExternalApi {
+public class DoctorExternalController implements DoctorApi {
 
     @Autowired
     private DoctorService doctorService;
@@ -36,8 +36,8 @@ public class DoctorExternalController implements DoctorExternalApi {
     private Commons commons;
 
     @Override
-    public ResponseEntity<GenericResponse<List<DoctorExternalDto>>> GetAllDoctors(int page, int size) throws ResourceNotFoundException {
-        List<DoctorExternalDto> resp = new ArrayList<>();
+    public ResponseEntity<GenericResponse<List<DocExternalDto>>> GetAllDoctors(int page, int size) throws ResourceNotFoundException {
+        List<DocExternalDto> resp = new ArrayList<>();
         PageRequest pageRequest = PageRequest.of(page, size);
 
         try {
@@ -60,18 +60,18 @@ public class DoctorExternalController implements DoctorExternalApi {
                                 doctor.setDoctorName(fullName);
                                 doctor.setInayaId(inayaId);
                                 doctorService.SaveDoctor(doctor);
-                                DoctorExternalDto doctorExternalDto = commons.GenerateDoctorExternalDto(doctor);
+                                DocExternalDto doctorExternalDto = commons.GenerateDoctorExternalDto(doctor);
                                 resp.add(doctorExternalDto);
                             } else {
                                 Optional<Doctor> doctor = doctorService.GetDoctorByInayaId(inayaId);
                                 if (doctor.isPresent()) {
                                     throw new ResourceNotFoundException("The Doctor with the provided Id does not exist in AppointmentDB");
                                 }
-                                DoctorExternalDto doctorExternalDto = commons.GenerateDoctorExternalDto(doctor.get());
+                                DocExternalDto doctorExternalDto = commons.GenerateDoctorExternalDto(doctor.get());
                                 resp.add(doctorExternalDto);
                             }
                         }
-                        GenericResponse<List<DoctorExternalDto>> response = new GenericResponse<>();
+                        GenericResponse<List<DocExternalDto>> response = new GenericResponse<>();
                         response.setCurrentPage(page);
                         response.setPageSize(size);
                         Integer totalCount = doctorService.countTotalItems();
@@ -91,11 +91,11 @@ public class DoctorExternalController implements DoctorExternalApi {
 
             List<Doctor> doctors = doctorService.GetAllDoctors(pageRequest);
             for (Doctor doctor : doctors) {
-                DoctorExternalDto doctorExternalDto = commons.GenerateDoctorExternalDto(doctor);
+                DocExternalDto doctorExternalDto = commons.GenerateDoctorExternalDto(doctor);
                 resp.add(doctorExternalDto);
             }
 
-            GenericResponse<List<DoctorExternalDto>> response = new GenericResponse<>();
+            GenericResponse<List<DocExternalDto>> response = new GenericResponse<>();
             response.setCurrentPage(page);
             response.setPageSize(size);
             Integer totalCount = doctorService.countTotalItems();

@@ -1,20 +1,19 @@
 package orci.or.tz.appointments.utilities;
 
-import orci.or.tz.appointments.dto.doctor.external.DoctorExternalDto;
+import orci.or.tz.appointments.dto.doctor.DocExternalDto;
+import orci.or.tz.appointments.dto.doctor.DoctorExternalDto;
 import orci.or.tz.appointments.dto.notification.SmsDto;
 import orci.or.tz.appointments.dto.patient.PatientDto;
 import orci.or.tz.appointments.dto.patient.PatientResponseDto;
 import orci.or.tz.appointments.models.ApplicationUser;
+import orci.or.tz.appointments.models.Doctor;
 import orci.or.tz.appointments.services.NotificationService;
-import orci.or.tz.appointments.models.*;
 import orci.or.tz.appointments.services.PatientService;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.time.LocalDateTime;
-import java.time.LocalTime;
-import java.time.temporal.ChronoField;
 
 
 @Component
@@ -63,7 +62,13 @@ public class Commons {
     }
 
     // Generate the DoctorExternalDto
-    public DoctorExternalDto GenerateDoctorExternalDto(Doctor doctor) {
+    public DocExternalDto GenerateDoctorExternalDto(Doctor doctor) {
+        ModelMapper modelMapper = mapper.getModelMapper();
+        DocExternalDto doctorExternalDto = modelMapper.map(doctor, DocExternalDto.class);
+        return doctorExternalDto;
+    }
+
+    public DoctorExternalDto GenerateDoctorDto(Doctor doctor) {
         ModelMapper modelMapper = mapper.getModelMapper();
         DoctorExternalDto doctorExternalDto = modelMapper.map(doctor, DoctorExternalDto.class);
         return doctorExternalDto;

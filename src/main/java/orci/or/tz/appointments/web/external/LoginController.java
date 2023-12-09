@@ -1,4 +1,4 @@
-package orci.or.tz.appointments.web.patient.external;
+package orci.or.tz.appointments.web.external;
 
 
 import orci.or.tz.appointments.dto.user.JwtResponse;
@@ -10,7 +10,7 @@ import orci.or.tz.appointments.security.jwt.JwtTokenUtil;
 import orci.or.tz.appointments.services.PatientService;
 import orci.or.tz.appointments.services.RefreshTokenService;
 import orci.or.tz.appointments.utilities.AppUserDetails;
-import orci.or.tz.appointments.web.patient.external.api.LoginApi;
+import orci.or.tz.appointments.web.external.api.LoginApi;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -18,6 +18,7 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.RestController;
+
 
 import java.io.IOException;
 import java.util.Optional;
