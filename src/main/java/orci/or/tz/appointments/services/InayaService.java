@@ -15,6 +15,9 @@ public class InayaService {
     @Value("${orci.inaya.api.url}")
     private String inayaUrl;
 
+    @Value("${orci.inaya.api.specialists.url}")
+    private String inayaSpecialistsUrl;
+
     public String GetPatient(String regNo) throws IOException {
         String inayaUrlRegNOEndpoint = inayaUrl+regNo;
 
@@ -34,6 +37,27 @@ public class InayaService {
             System.out.println(e.getMessage());
             return null;
         }
+
+    }
+
+    public String GetAllSpecialists() throws IOException {
+        OkHttpClient client = new OkHttpClient();
+        Request request = new Request.Builder()
+                .url(inayaSpecialistsUrl)
+                .build();
+        Response response = client.newCall(request).execute();
+
+        try{
+            if (response.isSuccessful() && response.code() == 200){
+                return response.body().string();
+            } else {
+                return null;
+            }
+        } catch (IOException e) {
+            System.out.println(e.getMessage());
+            throw e;
+        }
+
 
     }
 

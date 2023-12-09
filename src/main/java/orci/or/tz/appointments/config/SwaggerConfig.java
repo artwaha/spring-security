@@ -28,6 +28,30 @@ public class SwaggerConfig {
     }
 
 
+    @Bean
+    public Docket internal() {
+        ApiInfoBuilder builder = new ApiInfoBuilder().title("DOCTORS APPOINTMENT EXTERNAL API").description("Documentation automatically generated").version("1.0.0").contact(new Contact("ORCI Developers", "orci.or.tz", "abdulhemedi99@gmail.com"));
+        return new Docket(DocumentationType.SWAGGER_2)
+                .select()
+                .apis(RequestHandlerSelectors.basePackage("orci.or.tz.appointments.web.internal"))
+                .paths(PathSelectors.any()).build().securitySchemes(Arrays.asList(securityScheme()))
+                .securityContexts(Arrays.asList(securityContext())).apiInfo(builder.build());
+
+    }
+
+
+    @Bean
+    public Docket external() {
+        ApiInfoBuilder builder = new ApiInfoBuilder().title("DOCTORS APPOINTMENT EXTERNAL API").description("Documentation automatically generated").version("1.0.0").contact(new Contact("ORCI Developers", "orci.or.tz", "abdulhemedi99@gmail.com"));
+        return new Docket(DocumentationType.SWAGGER_2)
+                .select()
+                .apis(RequestHandlerSelectors.basePackage("orci.or.tz.appointments.web.external"))
+                .paths(PathSelectors.any()).build().securitySchemes(Arrays.asList(securityScheme()))
+                .securityContexts(Arrays.asList(securityContext())).apiInfo(builder.build());
+
+    }
+
+
 
     private SecurityScheme securityScheme() {
         return new ApiKey("JWT", "Authorization", "header");
