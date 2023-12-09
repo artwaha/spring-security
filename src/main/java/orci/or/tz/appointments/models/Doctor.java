@@ -31,6 +31,7 @@ public class Doctor extends Auditable<String> implements Serializable {
     @Column(name = "inaya_id", nullable = false)
     private Integer inayaId;
 
+<<<<<<< HEAD
     @Column(name = "status", nullable = false)
     @Enumerated(EnumType.STRING)
     private DoctorStatusEnum status = DoctorStatusEnum.ACTIVE;
@@ -48,5 +49,23 @@ public class Doctor extends Auditable<String> implements Serializable {
     private boolean thursday = false;
 
     @Column(name = "friday", nullable = false)
+=======
+    @Column(name="status", nullable = false)
+    private DoctorStatusEnum status = DoctorStatusEnum.ACTIVE;
+
+    @Column(name = "Monday", nullable=false)
+    private boolean monday = false;
+
+    @Column(name = "Monday", nullable=false)
+    private boolean tuesday = false;
+
+    @Column(name = "Monday", nullable=false)
+    private boolean wednesday = false;
+
+    @Column(name = "Monday", nullable=false)
+    private boolean thursday = false;
+
+    @Column(name = "Monday", nullable=false)
+>>>>>>> f1f853977caf628cb150e6da779d92705c40eac3
     private boolean friday = false;
 }

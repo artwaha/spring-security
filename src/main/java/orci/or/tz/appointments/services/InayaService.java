@@ -52,7 +52,11 @@ public class InayaService {
             }
         } catch (IOException e) {
             System.out.println(e.getMessage());
+<<<<<<< HEAD
             return null;
+=======
+            throw e;
+>>>>>>> f1f853977caf628cb150e6da779d92705c40eac3
         }
 
 
