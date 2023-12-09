@@ -1,10 +1,12 @@
 package orci.or.tz.appointments.utilities;
 
+import orci.or.tz.appointments.dto.doctor.external.DoctorExternalDto;
 import orci.or.tz.appointments.dto.notification.SmsDto;
 import orci.or.tz.appointments.dto.patient.PatientDto;
 import orci.or.tz.appointments.dto.patient.PatientResponseDto;
 import orci.or.tz.appointments.models.ApplicationUser;
 import orci.or.tz.appointments.services.NotificationService;
+import orci.or.tz.appointments.models.*;
 import orci.or.tz.appointments.services.PatientService;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -58,6 +60,26 @@ public class Commons {
         ModelMapper modelMapper = mapper.getModelMapper();
         PatientDto patient = modelMapper.map(p, PatientDto.class);
         return patient;
+    }
+
+    // Generate the DoctorExternalDto
+    public DoctorExternalDto GenerateDoctorExternalDto(Doctor doctor) {
+        ModelMapper modelMapper = mapper.getModelMapper();
+        DoctorExternalDto doctorExternalDto = modelMapper.map(doctor, DoctorExternalDto.class);
+        return doctorExternalDto;
+    }
+
+    //This functions returns the total number of pages
+    public Integer GetTotalNumberOfPages(Integer totalCount, Integer pageSize) {
+        Integer results;
+
+        if (totalCount % pageSize == 0) {
+            results = totalCount / pageSize;
+        } else {
+            results = totalCount / pageSize + 1;
+        }
+
+        return results;
     }
 
 

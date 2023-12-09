@@ -1,4 +1,4 @@
-package orci.or.tz.appointments.web.api;
+package orci.or.tz.appointments.web.patient.external.api;
 
 import orci.or.tz.appointments.dto.patient.PatientUpdateMobileDto;
 

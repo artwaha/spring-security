@@ -1,4 +1,4 @@
-package orci.or.tz.appointments.web.api;
+package orci.or.tz.appointments.web.patient.external.api;
 
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;

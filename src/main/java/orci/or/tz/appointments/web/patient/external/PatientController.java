@@ -1,4 +1,4 @@
-package orci.or.tz.appointments.web;
+package orci.or.tz.appointments.web.patient.external;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import orci.or.tz.appointments.dto.patient.PatientDto;
@@ -11,13 +11,11 @@ import orci.or.tz.appointments.services.InayaService;
 import orci.or.tz.appointments.services.PatientService;
 import orci.or.tz.appointments.services.RefreshTokenServiceImpl;
 import orci.or.tz.appointments.utilities.Commons;
-import orci.or.tz.appointments.web.api.PatientApi;
+import orci.or.tz.appointments.web.patient.external.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.util.pattern.PathPattern;
 import com.fasterxml.jackson.databind.JsonNode;
 
 import java.time.LocalDate;
@@ -105,26 +103,16 @@ public class PatientController implements PatientApi {
         }else{
 
             ApplicationUser user = patientFromDB.get();
-            System.out.println("APPLICATION USER REGISTERD 0-> "+ user );
-            System.out.println("APPLICATION USER REGISTERD 0-> "+ user );
-            System.out.println("APPLICATION USER REGISTERD 0-> "+ user );
 
             if (Boolean.FALSE.equals(user.getConfirmed())) {
                 user.setConfirmed(false);
                 patientService.SavePatient(user);
                 PatientDto patientDto = commons.GeneratePatientDTO(user);
-                System.out.println("APPLICATION USER REGISTERD 1-> "+ user );
-                System.out.println("APPLICATION USER REGISTERD 1-> "+ user );
-                System.out.println("APPLICATION USER REGISTERD 1-> "+ user );
                 return ResponseEntity.ok(patientDto);
             } else {
-                System.out.println("APPLICATION USER REGISTERD 2-> "+ user );
-                System.out.println("APPLICATION USER REGISTERD 2-> "+ user );
-                System.out.println("APPLICATION USER REGISTERD 2-> "+ user );
+
                 if (user.getOtp() != null) {
-                    System.out.println("APPLICATION USER REGISTERD 3-> "+ user );
-                    System.out.println("APPLICATION USER REGISTERD 3-> "+ user );
-                    System.out.println("APPLICATION USER REGISTERD 3-> "+ user );
+  
                     if (!user.getValidUntil().isAfter(LocalDateTime.now())) {
                         // validation done here
                         user.setConfirmed(true);
@@ -142,9 +130,6 @@ public class PatientController implements PatientApi {
                         return ResponseEntity.ok(patientDto);
                     }
                 } else {
-                    System.out.println("APPLICATION USER REGISTERD LAST-> "+ user );
-                    System.out.println("APPLICATION USER REGISTERD LAST-> "+ user );
-                    System.out.println("APPLICATION USER REGISTERD LAST-> "+ user );
                     PatientDto patientDto = commons.GeneratePatientDTO(user);
                     return ResponseEntity.ok(patientDto);
                 }

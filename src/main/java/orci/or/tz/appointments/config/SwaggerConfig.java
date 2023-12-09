@@ -13,18 +13,54 @@ import springfox.documentation.swagger2.annotations.EnableSwagger2;
 
 import java.util.Arrays;
 
+
 @Configuration
 @EnableSwagger2
 public class SwaggerConfig {
 
+
     @Bean
-    public Docket api() {
-        ApiInfoBuilder builder = new ApiInfoBuilder().title("ORCI Appointments API").description("Documentation automatically generated").version("1.0.0").contact(new Contact("ORCI Developers", "orci.or.tz", "abdulhemedi99@gmail.com"));
+    public Docket externalPatientsApi() {
+        ApiInfoBuilder builder = new ApiInfoBuilder().title("ORCI patients External Appointments API")
+                .description("Documentation automatically generated").version("1.0.0")
+                .contact(new Contact("ORCI Developers", "orci.or.tz", "abdulhemedi99@gmail.com"));
         return new Docket(DocumentationType.SWAGGER_2)
+                .groupName("externalPatientsApi") // Unique name for the Docket
                 .select()
-                .apis(RequestHandlerSelectors.basePackage("orci.or.tz.appointments.web"))
-                .paths(PathSelectors.any()).build().securitySchemes(Arrays.asList(securityScheme()))
-                .securityContexts(Arrays.asList(securityContext())).apiInfo(builder.build());
+                .apis(RequestHandlerSelectors.basePackage("orci.or.tz.appointments.web.patient.external"))
+                .paths(PathSelectors.any())
+                .build()
+                .apiInfo(builder.build());
+    }
+
+    // This is for external doctors API
+    @Bean
+    public Docket externalDoctorsApi() {
+        ApiInfoBuilder builder = new ApiInfoBuilder().title("ORCI Doctors External Appointments API")
+                .description("Documentation automatically generated").version("1.0.0")
+                .contact(new Contact("ORCI Developers", "orci.or.tz", "abdulhemedi99@gmail.com"));
+        return new Docket(DocumentationType.SWAGGER_2)
+                .groupName("externalDoctorsApi") // Unique name for the Docket
+                .select()
+                .apis(RequestHandlerSelectors.basePackage("orci.or.tz.appointments.web.doctor.external"))
+                .paths(PathSelectors.any())
+                .build()
+                .apiInfo(builder.build());
+    }
+
+    // This is for internal doctors API
+    @Bean
+    public Docket internalDoctorsApi() {
+        ApiInfoBuilder builder = new ApiInfoBuilder().title("ORCI Doctors Internal API")
+                .description("Documentation automatically generated").version("1.0.0")
+                .contact(new Contact("ORCI Developers", "orci.or.tz", "abdulhemedi99@gmail.com"));
+        return new Docket(DocumentationType.SWAGGER_2)
+                .groupName("internalDoctorsApi") // Unique name for the Docket
+                .select()
+                .apis(RequestHandlerSelectors.basePackage("orci.or.tz.appointments.web.doctor.internal"))
+                .paths(PathSelectors.any())
+                .build()
+                .apiInfo(builder.build());
     }
 
 
@@ -36,7 +72,8 @@ public class SwaggerConfig {
     private SecurityContext securityContext() {
         return SecurityContext.builder()
                 .securityReferences(Arrays.asList(new SecurityReference("JWT", scopes())))
-                .forPaths(PathSelectors.any()).build();
+                .forPaths(PathSelectors.any())
+                .build();
     }
 
     private AuthorizationScope[] scopes() {
@@ -44,4 +81,7 @@ public class SwaggerConfig {
         return scopes;
     }
 
+
 }
+
+
