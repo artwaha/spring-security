@@ -1,7 +1,7 @@
 package orci.or.tz.appointments.utilities;
 
 import orci.or.tz.appointments.dto.doctor.DocExternalDto;
-import orci.or.tz.appointments.dto.doctor.DoctorExternalDto;
+import orci.or.tz.appointments.dto.doctor.DoctorInternalDto;
 import orci.or.tz.appointments.dto.notification.SmsDto;
 import orci.or.tz.appointments.dto.patient.PatientDto;
 import orci.or.tz.appointments.dto.patient.PatientResponseDto;
@@ -12,6 +12,8 @@ import orci.or.tz.appointments.services.PatientService;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+
+import com.fasterxml.jackson.databind.JsonNode;
 
 import java.time.LocalDateTime;
 
@@ -68,10 +70,16 @@ public class Commons {
         return doctorExternalDto;
     }
 
-    public DoctorExternalDto GenerateDoctorDto(Doctor doctor) {
+    public DocExternalDto GenerateDoctorDto(Doctor doctor) {
         ModelMapper modelMapper = mapper.getModelMapper();
-        DoctorExternalDto doctorExternalDto = modelMapper.map(doctor, DoctorExternalDto.class);
+        DocExternalDto doctorExternalDto = modelMapper.map(doctor, DocExternalDto.class);
         return doctorExternalDto;
+    }
+
+    public DoctorInternalDto GenerateDoctorInternalDto (JsonNode jsonNode) {
+        ModelMapper modelMapper = mapper.getModelMapper();
+        DoctorInternalDto doctorInternalDto = modelMapper.map(jsonNode, DoctorInternalDto.class);
+        return doctorInternalDto;
     }
 
     //This functions returns the total number of pages

@@ -15,10 +15,12 @@ import java.util.List;
 @RequestMapping("/api/external/doctors/")
 @Api(value = "Doctor Management", description = "Manage Doctors on the web")
 public interface DoctorApi {
-    @ApiOperation(value = "View All Doctors", notes = "View All Doctors")
+   
+    @ApiOperation(value = "View All Doctors From Appointment DB (this is an external API)", notes = "View All Doctors From Appointment DB(this is an external API)")
     @GetMapping(value = "", produces = "application/json")
-    ResponseEntity<GenericResponse<List<DocExternalDto>>> GetAllDoctors(
+    ResponseEntity<GenericResponse<List<DocExternalDto >>> GetAllDoctorsFromAppointmentDBExternal(
             @RequestParam(defaultValue = "0", required = false) int page,
             @RequestParam(defaultValue = "10", required = false) int size
     ) throws ResourceNotFoundException;
+
 }

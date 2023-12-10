@@ -2,8 +2,11 @@ package orci.or.tz.appointments.web.internal;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import orci.or.tz.appointments.dto.doctor.DoctorExternalDto;
-import orci.or.tz.appointments.exceptions.ResourceNotFoundException;
+
+import orci.or.tz.appointments.dto.doctor.DocExternalDto;
+import orci.or.tz.appointments.dto.doctor.DoctorInternalDto;
+import orci.or.tz.appointments.dto.doctor.DoctorRequestDto;
+import orci.or.tz.appointments.exceptions.*;
 import orci.or.tz.appointments.models.Doctor;
 import orci.or.tz.appointments.services.DoctorService;
 import orci.or.tz.appointments.services.InayaService;
@@ -12,12 +15,16 @@ import orci.or.tz.appointments.utilities.GenericResponse;
 import orci.or.tz.appointments.web.internal.api.Doctor2Api;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
+
+import javax.validation.Valid;
 
 
 @RestController
@@ -32,76 +39,121 @@ public class DoctorInternalController implements Doctor2Api {
     @Autowired
     private Commons commons;
 
-    @Override
-    public ResponseEntity<GenericResponse<List<DoctorExternalDto>>> GetAllDoctors(int page, int size) throws ResourceNotFoundException {
-        List<DoctorExternalDto> resp = new ArrayList<>();
-        PageRequest pageRequest = PageRequest.of(page, size);
+  
 
+    @Override
+    public ResponseEntity<List<DoctorInternalDto>> GetAllDoctorsFromInayaApi() 
+        throws ResourceNotFoundException, OperationFailedException {
         try {
+            List<DoctorInternalDto> resp = new ArrayList<>();
             String doctorsFromInaya = inayaService.GetAllSpecialists();
             if (doctorsFromInaya == null) {
-                throw new ResourceNotFoundException("At Current No Specialists Fetched From Inaya");
+                throw new ResourceNotFoundException("No doctors Fetched From Inaya");
             } else {
                 ObjectMapper objectMapper = new ObjectMapper();
                 JsonNode jsonNode = objectMapper.readTree(doctorsFromInaya);
 
                 int codeValue = jsonNode.hasNonNull("code") ? jsonNode.get("code").asInt() : 0;
                 if (codeValue == 200) {
-                    JsonNode dataArray = jsonNode.get("data");
-                    if (dataArray.isArray()) {
-                        for (JsonNode doctorDataNodeFromInaya : dataArray) {
-                            String fullName = doctorDataNodeFromInaya.get("fullName").asText();
-                            int inayaId = doctorDataNodeFromInaya.get("id").asInt();
-                            if (!doctorService.CheckIfDoctorExistsByInayaId(inayaId)) {
-                                Doctor doctor = new Doctor();
-                                doctor.setDoctorName(fullName);
-                                doctor.setInayaId(inayaId);
-                                doctorService.SaveDoctor(doctor);
-                                DoctorExternalDto doctorExternalDto = commons.GenerateDoctorDto(doctor);
-                                resp.add(doctorExternalDto);
-                            } else {
-                                Optional<Doctor> doctor = doctorService.GetDoctorByInayaId(inayaId);
-                                if (doctor.isPresent()) {
-                                    throw new ResourceNotFoundException("The Doctor with the provided Id does not exist in AppointmentDB");
-                                }
-                                DoctorExternalDto doctorExternalDto = commons.GenerateDoctorDto(doctor.get());
-                                resp.add(doctorExternalDto);
-                            }
+                    JsonNode doctorsNode = jsonNode.get("data");
+                    if (doctorsNode.isArray()) {
+                        for (JsonNode doctor : doctorsNode) {
+                            DoctorInternalDto doctorInternalDto = commons.GenerateDoctorInternalDto(doctor);
+                            resp.add(doctorInternalDto);
                         }
-                        GenericResponse<List<DoctorExternalDto>> response = new GenericResponse<>();
-                        response.setCurrentPage(page);
-                        response.setPageSize(size);
-                        Integer totalCount = doctorService.countTotalItems();
-                        response.setTotalItems(totalCount);
-                        response.setTotalPages(commons.GetTotalNumberOfPages(totalCount, size));
-                        response.setData(resp);
-                        return ResponseEntity.ok(response);
+                        return ResponseEntity.ok(resp);
                     } else {
-                        System.out.println("\"data\" is not an array.");
+                        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                                .body(resp); 
                     }
                 } else {
-                    throw new ResourceNotFoundException("No Specialists Found From Inaya");
+                    return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                            .body(resp);
                 }
             }
         } catch (Exception e) {
+            // handle the exceptions
             System.out.println(e.getMessage());
+            throw new OperationFailedException("Failed to Connect or retrieve data from Inaya API");
+        }
+    }
 
-            List<Doctor> doctors = doctorService.GetAllDoctors(pageRequest);
-            for (Doctor doctor : doctors) {
-                DoctorExternalDto doctorExternalDto = commons.GenerateDoctorDto(doctor);
-                resp.add(doctorExternalDto);
-            }
 
-            GenericResponse<List<DoctorExternalDto>> response = new GenericResponse<>();
-            response.setCurrentPage(page);
-            response.setPageSize(size);
-            Integer totalCount = doctorService.countTotalItems();
-            response.setTotalItems(totalCount);
-            response.setTotalPages(commons.GetTotalNumberOfPages(totalCount, size));
-            response.setData(resp);
-            return ResponseEntity.ok(response);
+
+
+    @Override
+    public ResponseEntity<GenericResponse<List<DocExternalDto >>> GetAllDoctorsFromAppointmentDB(int page, int size) {
+    PageRequest pageRequest = PageRequest.of(page, size);
+
+    List<Doctor> doctors = doctorService.GetAllDoctors(pageRequest);
+
+        List<DocExternalDto > resp = new ArrayList<>();
+        for (Doctor doctor : doctors) {
+            DocExternalDto  dr = commons.GenerateDoctorExternalDto(doctor);
+            resp.add(dr);
         }
 
-        return null;
+        GenericResponse<List<DocExternalDto>> response = new GenericResponse<>();
+        response.setCurrentPage(page);
+        response.setPageSize(size);
+        Integer totalCount = doctorService.countTotalItems();
+        response.setTotalItems(totalCount);
+        response.setTotalPages(commons.GetTotalNumberOfPages(totalCount, size));
+        response.setData(resp);
+
+        return ResponseEntity.ok(response);
+
     }
+
+
+    @Override
+    public ResponseEntity<DocExternalDto > createDoctorIntoAppointmentDB(@Valid @RequestBody DoctorRequestDto doctorRequestDto)
+    throws ResourceNotFoundException, IOException {
+
+        if (!doctorService.CheckIfDoctorExistsByInayaId(doctorRequestDto.getInayaId())) {
+            String doctorNode = inayaService.GetSpecialistFromInayaById(doctorRequestDto.getInayaId());
+
+            if (doctorNode == null) {
+                throw new ResourceNotFoundException("The Specialist with The provided Id does not Exist in Inaya");
+            }
+            ObjectMapper objectMapper = new ObjectMapper();
+            JsonNode jsonNode = objectMapper.readTree(doctorNode);
+            int codeValue = jsonNode.hasNonNull("code") ? jsonNode.get("code").asInt() : 0;
+            System.out.println("code value for response ->" + codeValue);
+            System.out.println("code value for response ->" + codeValue);
+            System.out.println("code value for response ->" + codeValue);
+            if (codeValue == 200) {
+                String doctorName = jsonNode.get("data").get("fullName").asText();
+                Doctor doctor = new Doctor();
+                doctor.setDoctorName(doctorName);
+                doctor.setInayaId(doctorRequestDto.getInayaId());
+                doctor.setMonday(doctorRequestDto.isMonday());
+                doctor.setTuesday(doctorRequestDto.isTuesday());
+                doctor.setWednesday(doctorRequestDto.isWednesday());
+                doctor.setThursday(doctorRequestDto.isThursday());
+                doctor.setFriday(doctorRequestDto.isFriday());
+                // save thye object in the DB
+                doctorService.SaveDoctor(doctor);
+                DocExternalDto docExternalDto = commons.GenerateDoctorExternalDto(doctor);
+                System.out.println("code value for response 0->" + codeValue);
+                System.out.println("code value for response 0->" + codeValue);
+                System.out.println("code value for response 0->" + doctor);
+                System.out.println("code value for response 0->" + doctor);
+                return ResponseEntity.ok(docExternalDto);
+            } else {
+                System.out.println("code value for response 1->" + codeValue);
+                System.out.println("code value for response 1->" + codeValue);
+                System.out.println("code value for response 1->" + codeValue);
+                throw new ResourceNotFoundException("Doctor with Provided ID" + doctorRequestDto.getInayaId() + "Does Not Exists in Inaya");
+            }
+        
+        }
+        // we have to avoid duplication if the doctor with the specific ID from Inaya already exists
+        System.out.println("code value for response ->" + "EXISTS");
+        System.out.println("code value for response ->" + "EXISTS");
+        System.out.println("code value for response ->" + "EXISTS");
+        throw new IOException("The Specialist With the Provded ID" + doctorRequestDto.getInayaId() + "already Exists");
+    }
+
+
 }
