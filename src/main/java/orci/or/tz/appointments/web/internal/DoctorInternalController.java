@@ -6,6 +6,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import orci.or.tz.appointments.dto.doctor.DocExternalDto;
 import orci.or.tz.appointments.dto.doctor.DoctorInternalDto;
 import orci.or.tz.appointments.dto.doctor.DoctorRequestDto;
+import orci.or.tz.appointments.dto.doctor.DoctorUpdateDto;
 import orci.or.tz.appointments.exceptions.*;
 import orci.or.tz.appointments.models.Doctor;
 import orci.or.tz.appointments.services.DoctorService;
@@ -21,8 +22,10 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.io.IOException;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 import javax.validation.Valid;
 
@@ -154,6 +157,30 @@ public class DoctorInternalController implements Doctor2Api {
         System.out.println("code value for response ->" + "EXISTS");
         throw new IOException("The Specialist With the Provded ID" + doctorRequestDto.getInayaId() + "already Exists");
     }
+
+    @Override
+    public ResponseEntity<DocExternalDto > UpdateDoctorIntoAppointmentDB(@Valid @RequestBody DoctorUpdateDto doctorUpdateDto, Long id)
+            throws ResourceNotFoundException {
+
+                Optional<Doctor> d = doctorService.GetDoctorById(id);
+
+                if (!d.isPresent()) {
+            throw new ResourceNotFoundException("Directorate with provided ID [" + id + "] does not exist.");
+        }
+
+        Doctor dr = d.get();
+        dr.setMonday(doctorUpdateDto.isMonday());
+        dr.setTuesday(doctorUpdateDto.isTuesday());
+        dr.setWednesday(doctorUpdateDto.isWednesday());
+        dr.setThursday(doctorUpdateDto.isThursday());
+        dr.setFriday(doctorUpdateDto.isFriday());
+
+        doctorService.SaveDoctor(dr);
+
+        DocExternalDto resp = commons.GenerateDoctorDto(dr);
+        return ResponseEntity.ok(resp);
+
+            }    
 
 
 }
