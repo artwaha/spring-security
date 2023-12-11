@@ -26,12 +26,12 @@ import org.springframework.web.bind.annotation.RequestMapping;
 
 import io.swagger.annotations.Api;
 
-@RequestMapping("/api/internal/doctors/")
+@RequestMapping("/api/internal/doctors")
 @Api(value = "Doctor Management", description = "Manage Doctors on the web")
 public interface Doctor2Api {
 
     @ApiOperation(value = "View All Doctors From Inaya", notes = "View All Doctors From Inaya")
-    @GetMapping(value = "inaya/specialists/", produces = "application/json")
+    @GetMapping(value = "/inaya/specialists/", produces = "application/json")
     ResponseEntity<List<DoctorInternalDto>> GetAllDoctorsFromInayaApi() 
     throws ResourceNotFoundException, OperationFailedException;
     
@@ -49,7 +49,7 @@ public interface Doctor2Api {
             throws ResourceNotFoundException, IOException;
     
     @ApiOperation(value = "update a doctor ", notes = "Create a doctor")
-    @PutMapping(value = "{id}/", produces = "application/json", consumes = "application/json")
+    @PutMapping(value = "/{id}", produces = "application/json", consumes = "application/json")
     ResponseEntity<DocExternalDto > UpdateDoctorIntoAppointmentDB(@Valid @RequestBody DoctorUpdateDto doctorUpdateDto,  @PathVariable Long id)
             throws ResourceNotFoundException;        
 }
