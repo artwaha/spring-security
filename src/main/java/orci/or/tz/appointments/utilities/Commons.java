@@ -1,11 +1,13 @@
 package orci.or.tz.appointments.utilities;
 
+import orci.or.tz.appointments.dto.booking.BookingResponseDto;
 import orci.or.tz.appointments.dto.doctor.DocExternalDto;
 import orci.or.tz.appointments.dto.doctor.DoctorInternalDto;
 import orci.or.tz.appointments.dto.notification.SmsDto;
 import orci.or.tz.appointments.dto.patient.PatientDto;
 import orci.or.tz.appointments.dto.patient.PatientResponseDto;
 import orci.or.tz.appointments.models.ApplicationUser;
+import orci.or.tz.appointments.models.Booking;
 import orci.or.tz.appointments.models.Doctor;
 import orci.or.tz.appointments.services.NotificationService;
 import orci.or.tz.appointments.services.PatientService;
@@ -80,6 +82,12 @@ public class Commons {
         ModelMapper modelMapper = mapper.getModelMapper();
         DoctorInternalDto doctorInternalDto = modelMapper.map(jsonNode, DoctorInternalDto.class);
         return doctorInternalDto;
+    }
+
+    public BookingResponseDto GenerateBookingResponseDto(Booking booking) {
+        ModelMapper modelMapper = mapper.getModelMapper();
+        BookingResponseDto bookingResponseDto = modelMapper.map(booking, BookingResponseDto.class);
+        return bookingResponseDto;
     }
 
     //This functions returns the total number of pages

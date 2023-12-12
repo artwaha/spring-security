@@ -122,9 +122,7 @@ public class DoctorInternalController implements Doctor2Api {
             ObjectMapper objectMapper = new ObjectMapper();
             JsonNode jsonNode = objectMapper.readTree(doctorNode);
             int codeValue = jsonNode.hasNonNull("code") ? jsonNode.get("code").asInt() : 0;
-            System.out.println("code value for response ->" + codeValue);
-            System.out.println("code value for response ->" + codeValue);
-            System.out.println("code value for response ->" + codeValue);
+        
             if (codeValue == 200) {
                 String doctorName = jsonNode.get("data").get("fullName").asText();
                 Doctor doctor = new Doctor();
@@ -138,23 +136,13 @@ public class DoctorInternalController implements Doctor2Api {
                 // save thye object in the DB
                 doctorService.SaveDoctor(doctor);
                 DocExternalDto docExternalDto = commons.GenerateDoctorExternalDto(doctor);
-                System.out.println("code value for response 0->" + codeValue);
-                System.out.println("code value for response 0->" + codeValue);
-                System.out.println("code value for response 0->" + doctor);
-                System.out.println("code value for response 0->" + doctor);
                 return ResponseEntity.ok(docExternalDto);
             } else {
-                System.out.println("code value for response 1->" + codeValue);
-                System.out.println("code value for response 1->" + codeValue);
-                System.out.println("code value for response 1->" + codeValue);
                 throw new ResourceNotFoundException("Doctor with Provided ID" + doctorRequestDto.getInayaId() + "Does Not Exists in Inaya");
             }
         
         }
         // we have to avoid duplication if the doctor with the specific ID from Inaya already exists
-        System.out.println("code value for response ->" + "EXISTS");
-        System.out.println("code value for response ->" + "EXISTS");
-        System.out.println("code value for response ->" + "EXISTS");
         throw new IOException("The Specialist With the Provded ID" + doctorRequestDto.getInayaId() + "already Exists");
     }
 
@@ -177,7 +165,7 @@ public class DoctorInternalController implements Doctor2Api {
 
         doctorService.SaveDoctor(dr);
 
-        DocExternalDto resp = commons.GenerateDoctorDto(dr);
+        DocExternalDto resp = commons.GenerateDoctorExternalDto(dr);
         return ResponseEntity.ok(resp);
 
             }    

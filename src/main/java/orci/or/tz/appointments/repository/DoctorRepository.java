@@ -14,6 +14,6 @@ public interface DoctorRepository extends JpaRepository<Doctor, Long> {
 
     List<Doctor> findAllByOrderByIdDesc(Pageable pageable);
 
-
     boolean existsByInayaId(Integer inayaId);
+    
 }
