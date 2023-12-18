@@ -61,7 +61,9 @@ public class DoctorInternalController implements Doctor2Api {
                     JsonNode doctorsNode = jsonNode.get("data");
                     if (doctorsNode.isArray()) {
                         for (JsonNode doctor : doctorsNode) {
-                            DoctorInternalDto doctorInternalDto = commons.GenerateDoctorInternalDto(doctor);
+                            DoctorInternalDto doctorInternalDto = new DoctorInternalDto();
+                            doctorInternalDto.setInayaId(doctor.get("id").asInt());
+                            doctorInternalDto.setDoctorName(doctor.get("fullName").asText());
                             resp.add(doctorInternalDto);
                         }
                         return ResponseEntity.ok(resp);
