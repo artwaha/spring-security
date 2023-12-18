@@ -98,10 +98,10 @@ public class BookingController implements BookingApi{
                                 return ResponseEntity.ok(bookingResponseDto);
                             } else {
                                 throw new OperationFailedException("We're sorry, but appointments with " + dr.get().getDoctorName() + 
-                                " on this dayy you prefer are fully booked. Please choose another day or different specialist.");
+                                " on this day you prefer are fully booked. Please choose another day or different specialist.");
                             }
                         } else {
-                            throw new OperationFailedException("WEe're sorry, but " + dr.get().getDoctorName() + 
+                            throw new OperationFailedException("We're sorry, but " + dr.get().getDoctorName() +
                                 " is not available on " + dayOfWeek + ". Please select another day or a different specialist.");
                         }
 
@@ -118,10 +118,10 @@ public class BookingController implements BookingApi{
                                 return ResponseEntity.ok(bookingResponseDto);
                             } else {
                                 throw new OperationFailedException("We're sorry, but appointments with " + dr.get().getDoctorName() + 
-                                " on this dayy you prefer are fully booked. Please choose another day or different specialist.");
+                                " on this day you prefer are fully booked. Please choose another day or different specialist.");
                             }
                         } else {
-                            throw new OperationFailedException("WEe're sorry, but " + dr.get().getDoctorName() + 
+                            throw new OperationFailedException("We're sorry, but " + dr.get().getDoctorName() +
                                 " is not available on " + dayOfWeek + ". Please select another day or a different specialist.");
                         }
 
@@ -141,7 +141,7 @@ public class BookingController implements BookingApi{
                                 " on this dayy you prefer are fully booked. Please choose another day or different specialist.");
                             }
                         } else {
-                            throw new OperationFailedException("WEe're sorry, but " + dr.get().getDoctorName() + 
+                            throw new OperationFailedException("We're sorry, but " + dr.get().getDoctorName() +
                                 " is not available on " + dayOfWeek + ". Please select another day or a different specialist.");
                         }
 
@@ -161,7 +161,7 @@ public class BookingController implements BookingApi{
                                 " on this dayy you prefer are fully booked. Please choose another day or different specialist.");
                             }
                         } else {
-                            throw new OperationFailedException("WEe're sorry, but " + dr.get().getDoctorName() + 
+                            throw new OperationFailedException("We're sorry, but " + dr.get().getDoctorName() +
                                 " is not available on " + dayOfWeek + ". Please select another day or a different specialist.");
                         }
                         
@@ -181,14 +181,14 @@ public class BookingController implements BookingApi{
                                 " on this dayy you prefer are fully booked. Please choose another day or different specialist.");
                             }
                         } else {
-                            throw new OperationFailedException("WEe're sorry, but " + dr.get().getDoctorName() + 
+                            throw new OperationFailedException("We're sorry, but " + dr.get().getDoctorName() +
                                 " is not available on " + dayOfWeek + ". Please select another day or a different specialist.");
                         }
                         
 
 
                     default:
-                        throw new OperationFailedException("You cannot amke an appointment with any of our specialist during the wekends");
+                        throw new OperationFailedException("You cannot make an appointment with any of our specialist during the wekends");
                 }
 
             } else {
