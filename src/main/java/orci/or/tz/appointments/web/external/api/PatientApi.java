@@ -26,4 +26,6 @@ public interface PatientApi {
     @RequestMapping(value = "mobile/", method = RequestMethod.PUT, produces = "application/json")
     ResponseEntity<PatientDto> UpdatePatientMobileNumber(@RequestBody PatientUpdateMobileDto patientUpdateMobileDto) throws ResourceNotFoundException, IOException;
 
+
+
 }

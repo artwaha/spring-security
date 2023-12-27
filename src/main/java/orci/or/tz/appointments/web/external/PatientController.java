@@ -113,7 +113,7 @@ public class PatientController implements PatientApi {
 
                 if (user.getOtp() != null) {
   
-                    if (!user.getValidUntil().isAfter(LocalDateTime.now())) {
+                    if (user.getValidUntil().isAfter(LocalDateTime.now())) {
                         // validation done here
                         user.setConfirmed(true);
                         patientService.SavePatient(user);

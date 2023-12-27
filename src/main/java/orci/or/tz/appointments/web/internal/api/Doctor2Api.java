@@ -17,8 +17,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 import com.fasterxml.jackson.databind.JsonNode;
 
-import orci.or.tz.appointments.dto.doctor.DoctorInternalDto;
-
 import java.io.IOException;
 import java.util.List;
 
