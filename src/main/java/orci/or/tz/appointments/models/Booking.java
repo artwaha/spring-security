@@ -41,6 +41,6 @@ public class Booking {
     private boolean isPushed = false;
 
     @Column(name = "booking_status", nullable = false)
-    private BookingStatusEnum bookingStatus = BookingStatusEnum.CREATED;
+    private BookingStatusEnum bookingStatus = BookingStatusEnum.PENDING;
 
 }

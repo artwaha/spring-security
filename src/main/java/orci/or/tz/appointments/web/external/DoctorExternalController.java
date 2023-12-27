@@ -39,7 +39,7 @@ public class DoctorExternalController implements DoctorApi {
             resp.add(dr);
         }
 
-        // Setting the DepartmentPaginationResponseDto fields
+        
         GenericResponse<List<DocExternalDto>> response = new GenericResponse<>();
         response.setCurrentPage(page);
         response.setPageSize(size);

@@ -1,14 +1,18 @@
 package orci.or.tz.appointments.services;
 import orci.or.tz.appointments.dto.booking.*;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.squareup.okhttp.*;
 
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.RestTemplate;
 
 import java.io.IOException;
 import java.time.LocalDate;
+
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
 
 @Service
 public class InayaService {
@@ -41,7 +45,6 @@ public class InayaService {
                 return null;
             }
         } catch (IOException e) {
-            System.out.println(e.getMessage());
             return null;
         }
 
@@ -89,36 +92,41 @@ public class InayaService {
         }
     }
 
-    public String GetAppointmentsCountToASpecificSpecialist(Integer id, LocalDate appointmentDate) 
-    throws IOException {
 
-        BookingCountRequestDto bookingCountRequestDto = new BookingCountRequestDto();
-        bookingCountRequestDto.setBookingDate(appointmentDate);
-        bookingCountRequestDto.setDoctorId(id);
-        ObjectMapper objectMapper = new ObjectMapper();
-        String jsonRequestBody = objectMapper.writeValueAsString(bookingCountRequestDto);
+    public String GetAppointmentsCountToASpecificSpecialist(Integer id, LocalDate appointmentDate) {
+        try {
+            // Prepare the request body
+            BookingCountRequestDto bookingCountRequestDto = new BookingCountRequestDto();
+            bookingCountRequestDto.setBookingDate(appointmentDate);
+            bookingCountRequestDto.setDoctorId(id);
 
-        OkHttpClient client = new OkHttpClient();
-        MediaType mediaType = MediaType.parse("application/json");
-        RequestBody body = RequestBody.create(mediaType, jsonRequestBody);
-        Request request = new Request.Builder()
-                            .url(inayaSpecialistBookingsCount)
-                            .post(body)
-                            .addHeader("content-Type", "application/json")
-                            .build();
-                        
-        Response response = client.newCall(request).execute();
+            // Set headers
+            HttpHeaders headers = new HttpHeaders();
+            headers.setContentType(MediaType.APPLICATION_JSON);
 
-        try{
-            if (response.isSuccessful() && response.code() == 200){
-                return response.body().string();
+            // Set request entity
+            HttpEntity<BookingCountRequestDto> requestEntity = new HttpEntity<>(bookingCountRequestDto, headers);
+
+            // Make the POST request
+            RestTemplate restTemplate = new RestTemplate();
+            String response = restTemplate.postForObject(inayaSpecialistBookingsCount, requestEntity, String.class);
+
+            // Process the response
+            if (response != null) {
+                System.out.println("COUNTS FOR APPOINTMENT ->" + response);
+                return response;
             } else {
+                System.out.println("Response is null");
                 return null;
             }
-        } catch (IOException e) {
-            System.out.println(e.getMessage());
-            throw e;
+        } catch (Exception e) {
+            System.out.println("Error: " + e.getMessage());
+            // Handle the exception or rethrow as needed
+            return null;
         }
     }
+
+
+    
 
 }

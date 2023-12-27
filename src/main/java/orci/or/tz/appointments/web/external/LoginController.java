@@ -56,6 +56,9 @@ public class LoginController implements LoginApi {
 
 
                     final String token = jwtUtils.generateToken(user);
+                    System.out.print(token);
+                    System.out.print(token);
+                    System.out.print(token);
                     RefreshToken refreshToken = refreshTokenService.createRefreshToken(userDetails.getId());
                     JwtResponse resp = new JwtResponse(token, userDetails.getId(), user.getRegistrationNumber(), refreshToken.getToken(), jwtUtils.getExpirationDateFromToken(token));
 

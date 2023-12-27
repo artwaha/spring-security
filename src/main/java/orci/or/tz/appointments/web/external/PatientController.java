@@ -136,7 +136,7 @@ public class PatientController implements PatientApi {
             }
 
         }
-    }
+    } 
 
 
 
@@ -149,19 +149,20 @@ public class PatientController implements PatientApi {
         try {
             if (!user.isPresent()) {
                 throw  new ResourceNotFoundException("Patient Not Found");
-            } else {
-                ApplicationUser patient = user.get();
-                patient.setMobile(mobile);
-                patient.setConfirmed(true);
-                patientService.SavePatient(patient);
-                commons.GenerateOTP(patient);
+            } 
 
-                PatientDto customizedPatient = commons.GeneratePatientDTO(patient);
-                return ResponseEntity.ok(customizedPatient);
-            }
+            ApplicationUser patient = user.get();
+            patient.setMobile(mobile);
+            patient.setConfirmed(true);
+            patientService.SavePatient(patient);
+            commons.GenerateOTP(patient);
+
+            PatientDto customizedPatient = commons.GeneratePatientDTO(patient);
+            return ResponseEntity.ok(customizedPatient);
+            
         } catch (Exception e) {
             e.getMessage();
-            throw new IOException("There is internal operation errors");
+            throw new IOException("There is internal operation issues");
         }
 
 

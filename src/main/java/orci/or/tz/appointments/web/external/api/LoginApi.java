@@ -15,7 +15,7 @@ import io.swagger.annotations.Api;
 @Api(value = "User Login", description = "Manage Login on the web")
 public interface LoginApi {
     @ApiOperation(value = "User Login", notes = "User Login")
-    @RequestMapping(value = "/account/login", method = RequestMethod.POST, produces = "application/json", consumes = "application/json")
+    @RequestMapping(value = "account/login", method = RequestMethod.POST, produces = "application/json", consumes = "application/json")
     ResponseEntity<?> UserLogin(@RequestBody LoginRequest request) throws IOException, OperationFailedException;
 
 }

@@ -15,6 +15,8 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 
+import com.fasterxml.jackson.databind.JsonNode;
+
 import orci.or.tz.appointments.dto.doctor.DoctorInternalDto;
 
 import java.io.IOException;
@@ -32,7 +34,7 @@ public interface Doctor2Api {
 
     @ApiOperation(value = "View All Doctors From Inaya", notes = "View All Doctors From Inaya")
     @GetMapping(value = "/inaya/specialists/", produces = "application/json")
-    ResponseEntity<List<DoctorInternalDto>> GetAllDoctorsFromInayaApi() 
+    ResponseEntity<List<JsonNode>> GetAllDoctorsFromInayaApi() 
     throws ResourceNotFoundException, OperationFailedException;
     
 

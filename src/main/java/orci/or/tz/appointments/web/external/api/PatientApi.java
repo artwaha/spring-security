@@ -14,16 +14,16 @@ import org.springframework.web.bind.annotation.RequestParam;
 import java.io.IOException;
 import io.swagger.annotations.Api;
 
-@RequestMapping("api/patient")
+@RequestMapping("/api/external/patient/")
 @Api(value = "Patient Management", description = "Manage Patient on the web")
 public interface PatientApi {
 
     @ApiOperation(value = "View All Patient By Registration Number", notes = "View All Patient By Registration Number")
-    @RequestMapping(value = "/external/regno", method = RequestMethod.GET, produces = "application/json")
+    @RequestMapping(value = "regno/", method = RequestMethod.GET, produces = "application/json")
     ResponseEntity<PatientDto> GetPatientByRegistration(@RequestParam String regNo) throws ResourceNotFoundException, IOException, OperationFailedException;
 
     @ApiOperation(value = "Update Mobile", notes = "Update Mobile")
-    @RequestMapping(value = "/external/mobile", method = RequestMethod.PUT, produces = "application/json")
+    @RequestMapping(value = "mobile/", method = RequestMethod.PUT, produces = "application/json")
     ResponseEntity<PatientDto> UpdatePatientMobileNumber(@RequestBody PatientUpdateMobileDto patientUpdateMobileDto) throws ResourceNotFoundException, IOException;
 
 }

@@ -4,7 +4,6 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import orci.or.tz.appointments.dto.doctor.DocExternalDto;
-import orci.or.tz.appointments.dto.doctor.DoctorInternalDto;
 import orci.or.tz.appointments.dto.doctor.DoctorRequestDto;
 import orci.or.tz.appointments.dto.doctor.DoctorUpdateDto;
 import orci.or.tz.appointments.exceptions.*;
@@ -22,7 +21,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.io.IOException;
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -45,10 +43,10 @@ public class DoctorInternalController implements Doctor2Api {
   
 
     @Override
-    public ResponseEntity<List<DoctorInternalDto>> GetAllDoctorsFromInayaApi() 
+    public ResponseEntity<List<JsonNode>> GetAllDoctorsFromInayaApi() 
         throws ResourceNotFoundException, OperationFailedException {
         try {
-            List<DoctorInternalDto> resp = new ArrayList<>();
+            List<JsonNode> resp = new ArrayList<>();
             String doctorsFromInaya = inayaService.GetAllSpecialists();
             if (doctorsFromInaya == null) {
                 throw new ResourceNotFoundException("No doctors Fetched From Inaya");
@@ -61,8 +59,7 @@ public class DoctorInternalController implements Doctor2Api {
                     JsonNode doctorsNode = jsonNode.get("data");
                     if (doctorsNode.isArray()) {
                         for (JsonNode doctor : doctorsNode) {
-                            DoctorInternalDto doctorInternalDto = commons.GenerateDoctorInternalDto(doctor);
-                            resp.add(doctorInternalDto);
+                            resp.add(doctor);
                         }
                         return ResponseEntity.ok(resp);
                     } else {
