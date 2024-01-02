@@ -111,29 +111,33 @@ public class PatientController implements PatientApi {
                 return ResponseEntity.ok(patientDto);
             } else {
 
-                if (user.getOtp() != null) {
-  
-                    if (user.getValidUntil().isAfter(LocalDateTime.now())) {
-                        // validation done here
-//                        user.setConfirmed(true);
+//                if (user.getOtp() != null) {
+//
+//                    if (user.getValidUntil().isAfter(LocalDateTime.now())) {
+//                        // validation done here
+////                        user.setConfirmed(true);
+////                        patientService.SavePatient(user);
+////                        Long userId = user.getId();
+////                        // Genarate the token for our user
+////                         refreshTokenServiceImpl.createRefreshToken(userId);
+//                        PatientDto patientDto = commons.GeneratePatientDTO(user);
+//                        return ResponseEntity.ok(patientDto);
+//                    }else{
+//                        // I have to generate the token
+//                        user.setOtp(null);
 //                        patientService.SavePatient(user);
-//                        Long userId = user.getId();
-//                        // Genarate the token for our user
-//                         refreshTokenServiceImpl.createRefreshToken(userId);
-                        PatientDto patientDto = commons.GeneratePatientDTO(user);
-                        return ResponseEntity.ok(patientDto);
-                    }else{
-                        // I have to generate the token
-                        user.setOtp(null);
-                        patientService.SavePatient(user);
-                        PatientDto patientDto = commons.GeneratePatientDTO(user);
-                        return ResponseEntity.ok(patientDto);
-                    }
-                } else {
-                    commons.GeneratePatient(user);
-                    PatientDto patientDto = commons.GeneratePatientDTO(user);
-                    return ResponseEntity.ok(patientDto);
-                }
+//                        PatientDto patientDto = commons.GeneratePatientDTO(user);
+//                        return ResponseEntity.ok(patientDto);
+//                    }
+//                } else {
+//                    commons.GeneratePatient(user);
+//                    PatientDto patientDto = commons.GeneratePatientDTO(user);
+//                    return ResponseEntity.ok(patientDto);
+//                }
+
+                commons.GenerateOTP(user);
+                PatientDto patientDto = commons.GeneratePatientDTO(user);
+                return ResponseEntity.ok(patientDto);
             }
 
         }
