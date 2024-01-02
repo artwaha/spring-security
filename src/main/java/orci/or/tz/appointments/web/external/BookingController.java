@@ -9,6 +9,7 @@ import java.util.Arrays;
 
 import javax.validation.Valid;
 
+import orci.or.tz.appointments.services.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.http.ResponseEntity;
@@ -28,11 +29,6 @@ import orci.or.tz.appointments.exceptions.ResourceNotFoundException;
 import orci.or.tz.appointments.models.ApplicationUser;
 import orci.or.tz.appointments.models.Booking;
 import orci.or.tz.appointments.models.Doctor;
-import orci.or.tz.appointments.services.BookingService;
-import orci.or.tz.appointments.services.DoctorService;
-import orci.or.tz.appointments.services.InayaService;
-import orci.or.tz.appointments.services.PatientService;
-import orci.or.tz.appointments.services.SecurityAuthenticationService;
 import orci.or.tz.appointments.utilities.Commons;
 import orci.or.tz.appointments.utilities.DateValidator;
 import orci.or.tz.appointments.utilities.GenericResponse;
@@ -55,6 +51,9 @@ public class BookingController implements BookingApi{
 
     @Autowired
     private Commons commons;
+
+    @Autowired
+    private NotificationService notificationService;
 
     @Autowired 
     private SecurityAuthenticationService securityAuthenticationService;
@@ -105,6 +104,7 @@ public class BookingController implements BookingApi{
                                 booking.setPatient(patient);
                     
                                 bookingService.SaveAppointment(booking);
+                                notificationService.SendBookingToQueue(booking);
                                 BookingResponseDto bookingResponseDto = commons.GenerateBookingResponseDto(booking);
                                 return ResponseEntity.ok(bookingResponseDto);
                             } else {
@@ -125,6 +125,7 @@ public class BookingController implements BookingApi{
                                 booking.setPatient(patient);
                     
                                 bookingService.SaveAppointment(booking);
+                                notificationService.SendBookingToQueue(booking);
                                 BookingResponseDto bookingResponseDto = commons.GenerateBookingResponseDto(booking);
                                 return ResponseEntity.ok(bookingResponseDto);
                             } else {
@@ -145,6 +146,7 @@ public class BookingController implements BookingApi{
                                 booking.setPatient(patient);
                     
                                 bookingService.SaveAppointment(booking);
+                                notificationService.SendBookingToQueue(booking);
                                 BookingResponseDto bookingResponseDto = commons.GenerateBookingResponseDto(booking);
                                 return ResponseEntity.ok(bookingResponseDto);
                             } else {
@@ -165,6 +167,7 @@ public class BookingController implements BookingApi{
                                 booking.setPatient(patient);
                     
                                 bookingService.SaveAppointment(booking);
+                                notificationService.SendBookingToQueue(booking);
                                 BookingResponseDto bookingResponseDto = commons.GenerateBookingResponseDto(booking);
                                 return ResponseEntity.ok(bookingResponseDto);
                             } else {
@@ -185,6 +188,7 @@ public class BookingController implements BookingApi{
                                 booking.setPatient(patient);
                     
                                 bookingService.SaveAppointment(booking);
+                                notificationService.SendBookingToQueue(booking);
                                 BookingResponseDto bookingResponseDto = commons.GenerateBookingResponseDto(booking);
                                 return ResponseEntity.ok(bookingResponseDto);
                             } else {
