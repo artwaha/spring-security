@@ -29,9 +29,8 @@ public class SwaggerConfig {
                 .groupName("external") // Unique name for the Docket
                 .select()
                 .apis(RequestHandlerSelectors.basePackage("orci.or.tz.appointments.web.external"))
-                .paths(PathSelectors.any())
-                .build()
-                .apiInfo(builder.build());
+                .paths(PathSelectors.any()).build().securitySchemes(Arrays.asList(securityScheme()))
+                .securityContexts(Arrays.asList(securityContext())).apiInfo(builder.build());
     }
 
     // This is for external doctors API
@@ -46,9 +45,8 @@ public class SwaggerConfig {
                 .groupName("internal") // Unique name for the Docket
                 .select()
                 .apis(RequestHandlerSelectors.basePackage("orci.or.tz.appointments.web.internal"))
-                .paths(PathSelectors.any())
-                .build()
-                .apiInfo(builder.build());
+                .paths(PathSelectors.any()).build().securitySchemes(Arrays.asList(securityScheme()))
+                .securityContexts(Arrays.asList(securityContext())).apiInfo(builder.build());
     }
 
 
