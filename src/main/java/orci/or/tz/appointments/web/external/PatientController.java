@@ -104,7 +104,7 @@ public class PatientController implements PatientApi {
 
             ApplicationUser user = patientFromDB.get();
 
-            if (Boolean.FALSE.equals(user.getConfirmed())) {
+            if (user.getConfirmed().equals(false)) {
                 user.setConfirmed(false);
                 patientService.SavePatient(user);
                 PatientDto patientDto = commons.GeneratePatientDTO(user);
@@ -115,11 +115,11 @@ public class PatientController implements PatientApi {
   
                     if (user.getValidUntil().isAfter(LocalDateTime.now())) {
                         // validation done here
-                        user.setConfirmed(true);
-                        patientService.SavePatient(user);
-                        Long userId = user.getId();
-                        // Genarate the token for our user
-                         refreshTokenServiceImpl.createRefreshToken(userId);
+//                        user.setConfirmed(true);
+//                        patientService.SavePatient(user);
+//                        Long userId = user.getId();
+//                        // Genarate the token for our user
+//                         refreshTokenServiceImpl.createRefreshToken(userId);
                         PatientDto patientDto = commons.GeneratePatientDTO(user);
                         return ResponseEntity.ok(patientDto);
                     }else{
@@ -130,6 +130,7 @@ public class PatientController implements PatientApi {
                         return ResponseEntity.ok(patientDto);
                     }
                 } else {
+                    commons.GeneratePatient(user);
                     PatientDto patientDto = commons.GeneratePatientDTO(user);
                     return ResponseEntity.ok(patientDto);
                 }
