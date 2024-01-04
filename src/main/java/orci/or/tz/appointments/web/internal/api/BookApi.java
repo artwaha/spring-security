@@ -6,10 +6,12 @@ import orci.or.tz.appointments.dto.booking.BookCountDto;
 import orci.or.tz.appointments.dto.booking.BookingCountDto;
 import orci.or.tz.appointments.dto.booking.BookingResponseDto;
 import orci.or.tz.appointments.enums.BookingStatusEnum;
+import orci.or.tz.appointments.exceptions.ResourceNotFoundException;
 import orci.or.tz.appointments.utilities.GenericResponse;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import java.time.LocalDate;
@@ -49,4 +51,11 @@ public interface BookApi {
             @RequestParam(required = false) LocalDate endDate,
             @RequestParam(required = false) BookingStatusEnum bookingStatus
     ) ;
+
+
+    @ApiOperation(value = "Resend Booking To Inaya", notes = "Resend Booking To Inaya")
+    @RequestMapping(value = "/resend", method = RequestMethod.POST, produces = "application/json")
+    ResponseEntity<?> ResendToInaya(@RequestParam Long bookingId) throws ResourceNotFoundException;
+
+
 }

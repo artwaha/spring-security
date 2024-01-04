@@ -31,4 +31,8 @@ public class NotificationService {
         rabbitTemplate.convertAndSend("orci.bookings", "bookings@3592", b);
     }
 
+    public void ResendBookingToQueue(BookingDto b) {
+        rabbitTemplate.convertAndSend("orci.bookings", "bookings@3592", b);
+    }
+
 }

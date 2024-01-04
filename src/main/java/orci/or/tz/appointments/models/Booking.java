@@ -19,7 +19,7 @@ public class Booking {
 
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "booking_id_seq")
-    @SequenceGenerator(name = "booking_id_seq", sequenceName = "BOOKING_ID_SEQ", initialValue = 999990, allocationSize = 1)
+    @SequenceGenerator(name = "booking_id_seq", sequenceName = "BOOKING_ID_SEQ", initialValue = 999999990, allocationSize = 1)
     @Column(name = "booking_id")
     private Long id;
 

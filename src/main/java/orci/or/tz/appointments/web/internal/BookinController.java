@@ -4,10 +4,12 @@ import orci.or.tz.appointments.dto.booking.BookCountDto;
 import orci.or.tz.appointments.dto.booking.BookingCountDto;
 import orci.or.tz.appointments.dto.booking.BookingResponseDto;
 import orci.or.tz.appointments.enums.BookingStatusEnum;
+import orci.or.tz.appointments.exceptions.ResourceNotFoundException;
 import orci.or.tz.appointments.models.ApplicationUser;
 import orci.or.tz.appointments.models.Booking;
 import orci.or.tz.appointments.services.BookingService;
 import orci.or.tz.appointments.services.DoctorService;
+import orci.or.tz.appointments.services.NotificationService;
 import orci.or.tz.appointments.utilities.Commons;
 import orci.or.tz.appointments.utilities.GenericResponse;
 import orci.or.tz.appointments.web.internal.api.BookApi;
@@ -20,6 +22,7 @@ import org.springframework.web.bind.annotation.RestController;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 @RestController
 public class BookinController implements BookApi {
@@ -32,6 +35,9 @@ public class BookinController implements BookApi {
 
     @Autowired
     private Commons commons;
+
+    @Autowired
+    private NotificationService notificationService;
 
 
     @Override
@@ -111,5 +117,18 @@ public class BookinController implements BookApi {
         response.setTotalPages(commons.GetTotalNumberOfPages(totalCount, size));
         response.setData(resp);
         return ResponseEntity.ok(response);
+    }
+
+    @Override
+    public ResponseEntity<?> ResendToInaya(Long bookingId) throws ResourceNotFoundException {
+        Optional<Booking> booking = bookingService.GetAppointmentById(bookingId);
+
+        if(!booking.isPresent()){
+            throw new ResourceNotFoundException("Booking with the ID is not Available");
+        }
+
+        notificationService.SendBookingToQueue(booking.get());
+        BookingResponseDto resp = commons.GenerateBookingResponseDto(booking.get());
+        return ResponseEntity.ok(resp);
     }
 }
