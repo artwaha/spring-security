@@ -1,6 +1,7 @@
 package orci.or.tz.appointments.utilities;
 
 import orci.or.tz.appointments.dto.booking.BookingResponseDto;
+import orci.or.tz.appointments.dto.doctor.DocDto;
 import orci.or.tz.appointments.dto.doctor.DocExternalDto;
 import orci.or.tz.appointments.dto.doctor.DoctorInternalDto;
 import orci.or.tz.appointments.dto.notification.SmsDto;
@@ -66,6 +67,12 @@ public class Commons {
     }
 
     // Generate the DoctorExternalDto
+
+    public DocDto GenerateDoctorInternalDto(Doctor doctor) {
+        ModelMapper modelMapper = mapper.getModelMapper();
+        DocDto doctorExternalDto = modelMapper.map(doctor, DocDto.class);
+        return doctorExternalDto;
+    }
     public DocExternalDto GenerateDoctorExternalDto(Doctor doctor) {
         ModelMapper modelMapper = mapper.getModelMapper();
         DocExternalDto doctorExternalDto = modelMapper.map(doctor, DocExternalDto.class);

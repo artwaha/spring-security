@@ -3,6 +3,7 @@ package orci.or.tz.appointments.web.internal;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import orci.or.tz.appointments.dto.doctor.DocDto;
 import orci.or.tz.appointments.dto.doctor.DocExternalDto;
 import orci.or.tz.appointments.dto.doctor.DoctorRequestDto;
 import orci.or.tz.appointments.dto.doctor.DoctorUpdateDto;
@@ -79,21 +80,19 @@ public class DoctorInternalController implements Doctor2Api {
     }
 
 
-
-
     @Override
-    public ResponseEntity<GenericResponse<List<DocExternalDto >>> GetAllDoctorsFromAppointmentDB(int page, int size) {
+    public ResponseEntity<GenericResponse<List<DocDto >>> GetAllDoctorsFromAppointmentDB(int page, int size) {
     PageRequest pageRequest = PageRequest.of(page, size);
 
     List<Doctor> doctors = doctorService.GetAllDoctors(pageRequest);
 
-        List<DocExternalDto > resp = new ArrayList<>();
+        List<DocDto > resp = new ArrayList<>();
         for (Doctor doctor : doctors) {
-            DocExternalDto  dr = commons.GenerateDoctorExternalDto(doctor);
+            DocDto dr = commons.GenerateDoctorInternalDto(doctor);
             resp.add(dr);
         }
 
-        GenericResponse<List<DocExternalDto>> response = new GenericResponse<>();
+        GenericResponse<List<DocDto>> response = new GenericResponse<>();
         response.setCurrentPage(page);
         response.setPageSize(size);
         Integer totalCount = doctorService.countTotalItems();
@@ -107,7 +106,7 @@ public class DoctorInternalController implements Doctor2Api {
 
 
     @Override
-    public ResponseEntity<DocExternalDto > createDoctorIntoAppointmentDB(@Valid @RequestBody DoctorRequestDto doctorRequestDto)
+    public ResponseEntity<DocDto > createDoctorIntoAppointmentDB(@Valid @RequestBody DoctorRequestDto doctorRequestDto)
     throws ResourceNotFoundException, IOException {
 
         if (!doctorService.CheckIfDoctorExistsByInayaId(doctorRequestDto.getInayaId())) {
@@ -132,7 +131,7 @@ public class DoctorInternalController implements Doctor2Api {
                 doctor.setFriday(doctorRequestDto.isFriday());
                 // save thye object in the DB
                 doctorService.SaveDoctor(doctor);
-                DocExternalDto docExternalDto = commons.GenerateDoctorExternalDto(doctor);
+                DocDto docExternalDto = commons.GenerateDoctorInternalDto(doctor);
                 return ResponseEntity.ok(docExternalDto);
             } else {
                 throw new ResourceNotFoundException("Doctor with Provided ID" + doctorRequestDto.getInayaId() + "Does Not Exists in Inaya");
@@ -144,7 +143,7 @@ public class DoctorInternalController implements Doctor2Api {
     }
 
     @Override
-    public ResponseEntity<DocExternalDto > UpdateDoctorIntoAppointmentDB(@Valid @RequestBody DoctorUpdateDto doctorUpdateDto, Long id)
+    public ResponseEntity<DocDto > UpdateDoctorIntoAppointmentDB(@Valid @RequestBody DoctorUpdateDto doctorUpdateDto, Long id)
             throws ResourceNotFoundException {
 
                 Optional<Doctor> d = doctorService.GetDoctorById(id);
@@ -162,7 +161,7 @@ public class DoctorInternalController implements Doctor2Api {
 
         doctorService.SaveDoctor(dr);
 
-        DocExternalDto resp = commons.GenerateDoctorExternalDto(dr);
+        DocDto resp = commons.GenerateDoctorInternalDto(dr);
         return ResponseEntity.ok(resp);
 
             }    

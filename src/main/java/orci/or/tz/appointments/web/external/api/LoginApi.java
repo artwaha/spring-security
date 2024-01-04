@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import java.io.IOException;
 import io.swagger.annotations.Api;
 
-@RequestMapping("/api/setup/")
+@RequestMapping("/api/external/")
 @Api(value = "User Login", description = "Manage Login on the web")
 public interface LoginApi {
     @ApiOperation(value = "User Login", notes = "User Login")
