@@ -41,7 +41,7 @@ public class BookinController implements BookApi {
         c.setPending(bookingService.CountAllAppointmentsByStatus(BookingStatusEnum.PENDING));
         c.setUpcoming(bookingService.CountAllAppointmentsByStatus(BookingStatusEnum.UPCOMING));
         c.setMissed(bookingService.CountAllAppointmentsByStatus(BookingStatusEnum.MISSED));
-        c.setCanceled(bookingService.CountAllAppointmentsByStatus(BookingStatusEnum.CANCELLED));
+        c.setCancelled(bookingService.CountAllAppointmentsByStatus(BookingStatusEnum.CANCELLED));
         c.setAttended(bookingService.CountAllAppointmentsByStatus(BookingStatusEnum.ATTENDED));
         c.setTotalDoctors(doctorService.countTotalItems());
         return ResponseEntity.ok(c);

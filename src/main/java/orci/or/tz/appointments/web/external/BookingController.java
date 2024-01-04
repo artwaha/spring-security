@@ -206,7 +206,7 @@ public class BookingController implements BookingApi {
         c.setPending(bookingService.countAppointmentsByBookingStatusAndPatient(BookingStatusEnum.PENDING, patient));
         c.setUpcoming(bookingService.countAppointmentsByBookingStatusAndPatient(BookingStatusEnum.UPCOMING, patient));
         c.setMissed(bookingService.countAppointmentsByBookingStatusAndPatient(BookingStatusEnum.MISSED, patient));
-        c.setCanceled(bookingService.countAppointmentsByBookingStatusAndPatient(BookingStatusEnum.CANCELLED, patient));
+        c.setCancelled(bookingService.countAppointmentsByBookingStatusAndPatient(BookingStatusEnum.CANCELLED, patient));
         c.setAttended(bookingService.countAppointmentsByBookingStatusAndPatient(BookingStatusEnum.ATTENDED, patient));
         return ResponseEntity.ok(c);
 

@@ -9,6 +9,6 @@ public class BookCountDto {
     private Integer upcoming;
     private Integer attended;
     private Integer missed;
-    private Integer canceled;
+    private Integer cancelled;
     private Integer totalDoctors;
 }
