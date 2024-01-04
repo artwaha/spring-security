@@ -31,9 +31,26 @@ public interface BookingApi {
     ResponseEntity<BookingCountDto> GetTotalCounts();
 
 
+    @ApiOperation(value = "Get User Appointments",
+            notes = "Get User Appointments")
+    @GetMapping(value = "", produces = "application/json")
+    ResponseEntity<GenericResponse<List<BookingResponseDto>>> GetUserAppointments(
+            @RequestParam(defaultValue = "0", required = false) int page,
+            @RequestParam(defaultValue = "10", required = false) int size
+    ) ;
+
+    @ApiOperation(value = "Get User Appointments By Status",
+            notes = "Get User Appointments By Status")
+    @GetMapping(value = "/status", produces = "application/json")
+    ResponseEntity<GenericResponse<List<BookingResponseDto>>> GetUserAppointmentsByStatus(
+            @RequestParam(defaultValue = "0", required = false) int page,
+            @RequestParam(defaultValue = "10", required = false) int size,
+            @RequestParam(required = false) BookingStatusEnum bookingStatus
+            ) ;
+
     @ApiOperation(value = "Get Appointments By Status and Date",
             notes = "Get Appointments By Status and Date")
-    @GetMapping(value = "", produces = "application/json")
+    @GetMapping(value = "status/date", produces = "application/json")
     ResponseEntity<GenericResponse<List<BookingResponseDto>>> GetAllAppointmentsByStatusAndDate(
             @RequestParam(defaultValue = "0", required = false) int page,
             @RequestParam(defaultValue = "10", required = false) int size,
@@ -49,8 +66,8 @@ public interface BookingApi {
     ResponseEntity<BookingResponseDto> CanCelAnAppointment(@PathVariable Long id) throws ResourceNotFoundException, OperationFailedException;
 
     //An Endpoint to update the Appointment date
-    @ApiOperation(value = "This endpoint takes the param of LocalDate, To Update the Appointment date of the Appointment that was already created before the AppointmentDate",
-            notes = "This endpoint takes the param of LocalDate, To Update the Appointment date of the Appointment that was already created before the AppointmentDate")
+    @ApiOperation(value = "Update User Appointment",
+            notes = "Update User Appointment")
     @PutMapping(value = "/{id}", produces = "application/json")
     ResponseEntity<BookingResponseDto> UpdateTheAppointmentDate(@PathVariable Long id,
                                                                 @RequestBody BookingUpdateDto bookingUpdateDto) throws ResourceNotFoundException,

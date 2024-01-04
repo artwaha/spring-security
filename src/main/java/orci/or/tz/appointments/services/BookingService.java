@@ -101,4 +101,29 @@ public class BookingService {
         startDate, endDate);
     }
 
+
+    public List<Booking> GetAllAppointments( Pageable pageable){
+        return bookingRepository.findAllByOrderByCreatedDateDesc(pageable);
+    }
+
+    public int CountAllAppointments() {
+        return (int) bookingRepository.count();
+    }
+
+    public List<Booking> GetAllAppointmentsByStatus( BookingStatusEnum status, Pageable pageable){
+        return bookingRepository.findByBookingStatusOrderByCreatedDateDesc(status,pageable);
+    }
+
+    public int CountAllAppointmentsByStatus(BookingStatusEnum status) {
+        return (int) bookingRepository.countByBookingStatus(status);
+    }
+
+    public List<Booking> GetAllAppointmentsByStatusAndDate( BookingStatusEnum status,LocalDate statDate, LocalDate enDate, Pageable pageable){
+        return bookingRepository.findByBookingStatusAndAppointmentDateBetweenOrderByCreatedDateDesc(status,statDate,enDate,pageable);
+    }
+
+    public int CountAllAppointmentsByStatusAndDate(BookingStatusEnum status,LocalDate statDate, LocalDate enDate) {
+        return (int) bookingRepository.countByBookingStatusAndAppointmentDateBetween(status,statDate,enDate);
+    }
+
 }

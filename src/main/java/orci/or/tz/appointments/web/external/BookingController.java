@@ -19,6 +19,7 @@ import orci.or.tz.appointments.utilities.GenericResponse;
 import orci.or.tz.appointments.web.external.api.BookingApi;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -213,7 +214,53 @@ public class BookingController implements BookingApi {
     }
 
     @Override
-    public ResponseEntity<GenericResponse<List<BookingResponseDto>>> GetAllAppointmentsByStatusAndDate(int page, int size, LocalDate startDate, LocalDate endDate, BookingStatusEnum bookingStatus) {
+    public ResponseEntity<GenericResponse<List<BookingResponseDto>>> GetUserAppointments(int page, int size) {
+        PageRequest pageRequest = PageRequest.of(page, size);
+        List<BookingResponseDto> resp = new ArrayList<>();
+
+        ApplicationUser patient = loggedUser.getInfo();
+        List<Booking> appointments = bookingService.GetAllPatientAppointments(patient, pageRequest);
+
+        for (Booking appointment : appointments) {
+            BookingResponseDto booking = commons.GenerateBookingResponseDto(appointment);
+            resp.add(booking);
+        }
+
+        GenericResponse<List<BookingResponseDto>> response = new GenericResponse<>();
+        response.setCurrentPage(page);
+        response.setPageSize(size);
+        Integer totalCount = bookingService.countAppointmentsForASpecificPatient(patient);
+        response.setTotalItems(totalCount);
+        response.setTotalPages(commons.GetTotalNumberOfPages(totalCount, size));
+        response.setData(resp);
+        return ResponseEntity.ok(response);
+    }
+
+    @Override
+    public ResponseEntity<GenericResponse<List<BookingResponseDto>>> GetUserAppointmentsByStatus(int page, int size, BookingStatusEnum bookingStatus) {
+        PageRequest pageRequest = PageRequest.of(page, size);
+        List<BookingResponseDto> resp = new ArrayList<>();
+
+        ApplicationUser patient = loggedUser.getInfo();
+        List<Booking> appointments = bookingService.GetAllPatientAppointmentsByBookingStatus( bookingStatus, patient, pageRequest);
+
+        for (Booking appointment : appointments) {
+            BookingResponseDto booking = commons.GenerateBookingResponseDto(appointment);
+            resp.add(booking);
+        }
+
+        GenericResponse<List<BookingResponseDto>> response = new GenericResponse<>();
+        response.setCurrentPage(page);
+        response.setPageSize(size);
+        Integer totalCount = bookingService.countAppointmentsByBookingStatusAndPatient(bookingStatus, patient);
+        response.setTotalItems(totalCount);
+        response.setTotalPages(commons.GetTotalNumberOfPages(totalCount, size));
+        response.setData(resp);
+        return ResponseEntity.ok(response);
+    }
+
+    @Override
+    public ResponseEntity<GenericResponse<List<BookingResponseDto>>> GetAllAppointmentsByStatusAndDate(int page, int size,@DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate startDate, @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate endDate, BookingStatusEnum bookingStatus) {
 
         PageRequest pageRequest = PageRequest.of(page, size);
         List<BookingResponseDto> resp = new ArrayList<>();
@@ -229,7 +276,7 @@ public class BookingController implements BookingApi {
         GenericResponse<List<BookingResponseDto>> response = new GenericResponse<>();
         response.setCurrentPage(page);
         response.setPageSize(size);
-        Integer totalCount = bookingService.countAppointmentsByBookingStatusAndPatient(bookingStatus, patient);
+        Integer totalCount = bookingService.countAppointmentsByBookingStatusAndDateRange(bookingStatus,startDate,endDate, patient);
         response.setTotalItems(totalCount);
         response.setTotalPages(commons.GetTotalNumberOfPages(totalCount, size));
         response.setData(resp);

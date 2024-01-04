@@ -19,7 +19,8 @@ import orci.or.tz.appointments.enums.BookingStatusEnum;
 public interface BookingRepository extends JpaRepository<Booking, Long> {
     Optional<Booking> findByIdAndPatient(Long id, ApplicationUser patient);
     List<Booking> findAllByPatientOrderByCreatedDateDesc(ApplicationUser patient, Pageable pageable);
-    
+    List<Booking> findAllByOrderByCreatedDateDesc( Pageable pageable);
+
     List<Booking> findAllByBookingStatusAndPatientOrderByCreatedDateDesc(
         BookingStatusEnum bookingStatus, ApplicationUser patient, Pageable pageable
     );
@@ -62,4 +63,10 @@ public interface BookingRepository extends JpaRepository<Booking, Long> {
      long countByPatientAndBookingStatusInAndAppointmentDateBetween(ApplicationUser patient, 
         List<BookingStatusEnum> bookingStatusList, LocalDate startDate, LocalDate endDate);
 
+     // By Status
+
+    List<Booking> findByBookingStatusOrderByCreatedDateDesc(BookingStatusEnum bookingStatus, Pageable pageable);
+    long countByBookingStatus(BookingStatusEnum bookingStatus);
+    List<Booking> findByBookingStatusAndAppointmentDateBetweenOrderByCreatedDateDesc(BookingStatusEnum bookingStatus,LocalDate statDate, LocalDate enDate, Pageable pageable);
+    long countByBookingStatusAndAppointmentDateBetween(BookingStatusEnum bookingStatus,LocalDate statDate, LocalDate enDate);
 }
