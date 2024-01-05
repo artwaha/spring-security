@@ -126,4 +126,12 @@ public class BookingService {
         return (int) bookingRepository.countByBookingStatusAndAppointmentDateBetween(status,statDate,enDate);
     }
 
+    public List<Booking> GetAllAppointmentsByDateAndUser( LocalDate statDate, LocalDate enDate,ApplicationUser p, Pageable pageable){
+        return bookingRepository.findAllByAppointmentDateBetweenAndPatientOrderByCreatedDateDesc(statDate,enDate,p,pageable);
+    }
+
+    public int CountAllAppointmentsByDateAndUser(LocalDate statDate, LocalDate enDate,ApplicationUser p) {
+        return (int) bookingRepository.countByAppointmentDateBetweenAndPatientOrderByCreatedDateDesc(statDate,enDate,p);
+    }
+
 }

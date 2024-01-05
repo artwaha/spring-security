@@ -307,6 +307,11 @@ public class BookingController implements BookingApi {
         {
             appointments = bookingService.GetAllPatientAppointmentsByBookingStatus( bookingStatus, patient, pageRequest);
             totalCount = bookingService.countAppointmentsByBookingStatusAndPatient(bookingStatus, patient);
+        }else
+        if(bookingStatus==null && startDate!= null && endDate != null)
+        {
+            appointments = bookingService.GetAllAppointmentsByDateAndUser( startDate,endDate, patient, pageRequest);
+            totalCount = bookingService.CountAllAppointmentsByDateAndUser(startDate,endDate, patient);
         }
 
         for (Booking appointment : appointments) {

@@ -69,4 +69,7 @@ public interface BookingRepository extends JpaRepository<Booking, Long> {
     long countByBookingStatus(BookingStatusEnum bookingStatus);
     List<Booking> findByBookingStatusAndAppointmentDateBetweenOrderByCreatedDateDesc(BookingStatusEnum bookingStatus,LocalDate statDate, LocalDate enDate, Pageable pageable);
     long countByBookingStatusAndAppointmentDateBetween(BookingStatusEnum bookingStatus,LocalDate statDate, LocalDate enDate);
+
+    List<Booking> findAllByAppointmentDateBetweenAndPatientOrderByCreatedDateDesc(LocalDate startDate, LocalDate endDate, ApplicationUser patient, Pageable pageable);
+    long countByAppointmentDateBetweenAndPatientOrderByCreatedDateDesc(LocalDate startDate, LocalDate endDate, ApplicationUser patient);
 }
