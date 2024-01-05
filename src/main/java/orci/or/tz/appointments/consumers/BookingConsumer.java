@@ -13,6 +13,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
+import java.io.OutputStream;
+import java.net.HttpURLConnection;
+import java.net.URL;
 import java.util.Optional;
 
 @Component
@@ -46,14 +51,14 @@ public class BookingConsumer {
                 JSONObject json = new JSONObject(dto);
                 System.out.println(" ----Data zinapelekwa Inaya  ->" + json);
 
-                OkHttpClient client = new OkHttpClient();
-                Request request = new Request.Builder()
-                        .url(bookingEndpoint)
-                        .post(RequestBody.create(
-                                MediaType.parse("application/json"), String.valueOf(json)))
-                        .build();
-
-                Response response = client.newCall(request).execute();
+//                OkHttpClient client = new OkHttpClient();
+//                Request request = new Request.Builder()
+//                        .url(bookingEndpoint)
+//                        .post(RequestBody.create(
+//                                MediaType.parse("application/json"), String.valueOf(json)))
+//                        .build();
+//
+//                Response response = client.newCall(request).execute();
 
 //                HttpRequest req = HttpRequest.newBuilder()
 //                        .uri(URI.create(bookingEndpoint))
@@ -64,19 +69,38 @@ public class BookingConsumer {
 //                var client = HttpClient.newHttpClient();
 //                var httpresponse = client.send(httprequest, HttpResponse.BodyHandlers.ofString());
 
-                if (response.isSuccessful() && response.code() == 200) {
 
-                    JSONObject json2 = new JSONObject(response.body());
-                    System.out.println(" ----Inaya Response ->" + json2);
+                URL url = new URL(bookingEndpoint);
+                HttpURLConnection con = (HttpURLConnection) url.openConnection();
+                con.setRequestMethod("POST");
+                con.setRequestProperty("Content-Type", "application/json; utf-8");
+                con.setRequestProperty("Accept", "application/json");
+                con.setDoOutput(true);
 
-                    // Update Booking status to SUBMITTED if sent successful
-
-                    if (json2.getInt("code") == 200) {
-                        bk.setPushed(true);
-                        bk.setBookingStatus(BookingStatusEnum.UPCOMING);
-                        bookingService.SaveAppointment(bk);
-                    }
+                try(OutputStream os = con.getOutputStream()) {
+                    byte[] input = json.toString().getBytes("utf-8");
+                    os.write(input, 0, input.length);
                 }
+
+                try(BufferedReader br = new BufferedReader(
+                        new InputStreamReader(con.getInputStream(), "utf-8"))) {
+                    StringBuilder response = new StringBuilder();
+                    String responseLine = null;
+                    while ((responseLine = br.readLine()) != null) {
+                        response.append(responseLine.trim());
+                        JSONObject json2 = new JSONObject(response.toString());
+
+                        // Update Booking status to SUBMITTED if sent successful
+
+                        if (json2.getInt("code") == 200) {
+                            bk.setPushed(true);
+                            bk.setBookingStatus(BookingStatusEnum.UPCOMING);
+                            bookingService.SaveAppointment(bk);
+                        }
+                    }
+                    System.out.println(" ----Inaya Response ->" +response.toString());
+                }
+
             } else {
                 System.out.println(" ----Booking haijapatikana  ");
             }

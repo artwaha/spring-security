@@ -22,9 +22,9 @@ public class SwaggerConfig {
 
     @Bean
     public Docket externalApi() {
-        ApiInfoBuilder builder = new ApiInfoBuilder().title("ORCI patients External Appointments API")
+        ApiInfoBuilder builder = new ApiInfoBuilder().title("ORCI External Appointments API Documentation")
                 .description("Documentation automatically generated").version("1.0.0")
-                .contact(new Contact("ORCI Developers", "orci.or.tz", "abdulhemedi99@gmail.com"));
+                .contact(new Contact("ORCI Developers", "orci.or.tz", "abdulrahman.othman@orci.or.tz"));
         return new Docket(DocumentationType.SWAGGER_2)
                 .groupName("external") // Unique name for the Docket
                 .select()
@@ -38,9 +38,9 @@ public class SwaggerConfig {
     // This is for internal doctors API
     @Bean
     public Docket internalApi() {
-        ApiInfoBuilder builder = new ApiInfoBuilder().title("ORCI Doctors Internal API")
+        ApiInfoBuilder builder = new ApiInfoBuilder().title("ORCI Internal Appointments API Documentation")
                 .description("Documentation automatically generated").version("1.0.0")
-                .contact(new Contact("ORCI Developers", "orci.or.tz", "abdulhemedi99@gmail.com"));
+                .contact(new Contact("ORCI Developers", "orci.or.tz", "abdulrahman.othman@orci.or.tz"));
         return new Docket(DocumentationType.SWAGGER_2)
                 .groupName("internal") // Unique name for the Docket
                 .select()
