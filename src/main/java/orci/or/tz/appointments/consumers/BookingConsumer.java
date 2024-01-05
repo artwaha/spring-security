@@ -9,15 +9,10 @@ import orci.or.tz.appointments.services.BookingService;
 import orci.or.tz.appointments.services.NotificationService;
 import org.json.JSONObject;
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
-import org.springframework.aop.scope.ScopedProxyUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
-import java.net.URI;
-import java.net.http.HttpClient;
-import java.net.http.HttpRequest;
-import java.net.http.HttpResponse;
 import java.util.Optional;
 
 @Component
@@ -33,12 +28,12 @@ public class BookingConsumer {
     private String bookingEndpoint;
 
     @RabbitListener(queues = "orci.appointment.bookings")
-    public void PushBookingToInaya(BookingDto b){
+    public void PushBookingToInaya(BookingDto b) {
         Optional<Booking> booking = bookingService.GetAppointmentById(b.getBookingId());
-        System.out.println( " ----Booking hii  ->" + booking.get().getId() );
-        try{
+        System.out.println(" ----Booking hii  ->" + booking.get().getId());
+        try {
 
-            if(booking.isPresent()){
+            if (booking.isPresent()) {
                 Booking bk = booking.get();
                 BookingInayaDto dto = new BookingInayaDto();
                 dto.setId(bk.getId());
@@ -49,7 +44,7 @@ public class BookingConsumer {
                 // Send HTTP Request to Inaya API
 
                 JSONObject json = new JSONObject(dto);
-                System.out.println( " ----Data zinapelekwa Inaya  ->" + String.valueOf(json));
+                System.out.println(" ----Data zinapelekwa Inaya  ->" + json);
 
                 OkHttpClient client = new OkHttpClient();
                 Request request = new Request.Builder()
@@ -72,7 +67,7 @@ public class BookingConsumer {
                 if (response.isSuccessful() && response.code() == 200) {
 
                     JSONObject json2 = new JSONObject(response.body());
-                    System.out.println(" ----Inaya Response ->" + String.valueOf(json2));
+                    System.out.println(" ----Inaya Response ->" + json2);
 
                     // Update Booking status to SUBMITTED if sent successful
 
@@ -82,11 +77,11 @@ public class BookingConsumer {
                         bookingService.SaveAppointment(bk);
                     }
                 }
-            }else{
-                System.out.println( " ----Booking haijapatikana  " );
+            } else {
+                System.out.println(" ----Booking haijapatikana  ");
             }
 
-        }catch (Exception e){
+        } catch (Exception e) {
             System.out.println("Failed to Push Booking to Inaya -> " + e.getMessage());
             notificationService.ResendBookingToQueue(b);
         }
