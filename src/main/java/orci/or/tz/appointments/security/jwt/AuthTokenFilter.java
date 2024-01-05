@@ -57,7 +57,7 @@ public class AuthTokenFilter extends OncePerRequestFilter {
                 //throw new AuthenticationCredentialsNotFoundException("Authentication Failed");
             }
         } else {
-            logger.warn("JWT Token does not begin with Bearer String");
+           // logger.warn("JWT Token does not begin with Bearer String");
             //throw new AuthenticationCredentialsNotFoundException("Authentication Failed");
         }
 
