@@ -73,7 +73,7 @@ public class BookingService {
     }
 
     public int countAppointmentsByBookingStatusAndDateRange(BookingStatusEnum bookingStatus, LocalDate startDate, LocalDate enDate, ApplicationUser patient) {
-        return (int) bookingRepository.countByBookingStatusAndCreatedDateBetweenAndPatient(bookingStatus, startDate, enDate, patient);
+        return (int) bookingRepository.countByBookingStatusAndAppointmentDateBetweenAndPatient(bookingStatus, startDate, enDate, patient);
     }
 
     // this counts the total items according to the status if the appointmnent e.g "pending"
