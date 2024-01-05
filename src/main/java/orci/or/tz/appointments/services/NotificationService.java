@@ -35,4 +35,11 @@ public class NotificationService {
         rabbitTemplate.convertAndSend("orci.bookings", "bookings@3592", b);
     }
 
+
+    public void SendBookingCancelationToQueue(Booking dto) {
+        BookingDto b = new BookingDto();
+        b.setBookingId(dto.getId());
+        rabbitTemplate.convertAndSend("orci.bookings", "cancelations@3592", b);
+    }
+
 }

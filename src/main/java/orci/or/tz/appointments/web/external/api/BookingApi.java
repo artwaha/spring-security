@@ -1,10 +1,8 @@
 package orci.or.tz.appointments.web.external.api;
 
+import com.rabbitmq.client.AMQP;
 import io.swagger.annotations.ApiOperation;
-import orci.or.tz.appointments.dto.booking.BookingCountDto;
-import orci.or.tz.appointments.dto.booking.BookingRequestDto;
-import orci.or.tz.appointments.dto.booking.BookingResponseDto;
-import orci.or.tz.appointments.dto.booking.BookingUpdateDto;
+import orci.or.tz.appointments.dto.booking.*;
 import orci.or.tz.appointments.enums.BookingStatusEnum;
 import orci.or.tz.appointments.exceptions.OperationFailedException;
 import orci.or.tz.appointments.exceptions.ResourceNotFoundException;
@@ -72,10 +70,9 @@ public interface BookingApi {
     ) ;
 
     // An Endpoint to Cancel The Appointments
-    @ApiOperation(value = "Cancel An Appointment that was created before the Appointment Day Only",
-            notes = "Cancel An Appointment that was created before the Appointment Day Only")
-    @PostMapping(value = "/{id}", produces = "application/json")
-    ResponseEntity<BookingResponseDto> CanCelAnAppointment(@PathVariable Long id) throws ResourceNotFoundException, OperationFailedException;
+    @ApiOperation(value = "Cancel Appointment", notes = "Cancel Appointment")
+    @PostMapping(value = "/cancel",consumes="application/json", produces = "application/json")
+    ResponseEntity<BookingResponseDto> CanCelAnAppointment(@RequestBody CancelDto request) throws ResourceNotFoundException, OperationFailedException;
 
     //An Endpoint to update the Appointment date
     @ApiOperation(value = "Update User Appointment",

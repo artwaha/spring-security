@@ -2,10 +2,7 @@ package orci.or.tz.appointments.web.external;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import orci.or.tz.appointments.dto.booking.BookingCountDto;
-import orci.or.tz.appointments.dto.booking.BookingRequestDto;
-import orci.or.tz.appointments.dto.booking.BookingResponseDto;
-import orci.or.tz.appointments.dto.booking.BookingUpdateDto;
+import orci.or.tz.appointments.dto.booking.*;
 import orci.or.tz.appointments.enums.BookingStatusEnum;
 import orci.or.tz.appointments.exceptions.OperationFailedException;
 import orci.or.tz.appointments.exceptions.ResourceNotFoundException;
@@ -330,17 +327,25 @@ public class BookingController implements BookingApi {
 
     // this endpoint Cancels A specific Appointment before the Appointment is reached
     @Override
-    public ResponseEntity<BookingResponseDto> CanCelAnAppointment(Long id) throws ResourceNotFoundException, OperationFailedException {
+    public ResponseEntity<BookingResponseDto> CanCelAnAppointment(CancelDto request) throws ResourceNotFoundException, OperationFailedException {
         ApplicationUser patient = loggedUser.getInfo();
 
-        Optional<Booking> appointment = bookingService.GetAppointmentByIdForASpecificPatient(id, patient);
+        Optional<Booking> appointment = bookingService.GetAppointmentByIdForASpecificPatient(request.getBookingId(), patient);
         if (!appointment.isPresent()) {
-            throw new ResourceNotFoundException("The Appointmnet with the provided Id " + id + " is Not Found");
+            throw new ResourceNotFoundException("The Appointmnet with the provided Id " + request.getBookingId() + " is Not Found");
         }
 
+
+        // Update Booking as Cancelled
         Booking booking = appointment.get();
         booking.setBookingStatus(BookingStatusEnum.CANCELLED);
+        booking.setCancelationReason(request.getCancelationReason());
         bookingService.SaveAppointment(booking);
+
+        // Trigger Inaya Cancelation
+        notificationService.SendBookingCancelationToQueue(booking);
+
+
         BookingResponseDto resp = commons.GenerateBookingResponseDto(booking);
         return ResponseEntity.ok(resp);
     }

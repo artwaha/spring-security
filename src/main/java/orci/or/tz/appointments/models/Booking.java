@@ -43,4 +43,7 @@ public class Booking {
     @Column(name = "booking_status", nullable = false)
     private BookingStatusEnum bookingStatus = BookingStatusEnum.PENDING;
 
+    @Column(name = "cancelation_reason", nullable = true,columnDefinition = "TEXT")
+    private String cancelationReason;
+
 }
