@@ -286,7 +286,7 @@ public class BookingController implements BookingApi {
     }
 
     @Override
-    public ResponseEntity<GenericResponse<List<BookingResponseDto>>> SearchWithCriteria(int page, int size, LocalDate startDate, LocalDate endDate, BookingStatusEnum bookingStatus) {
+    public ResponseEntity<GenericResponse<List<BookingResponseDto>>> SearchWithCriteria(int page, int size,@DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate startDate,@DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate endDate, BookingStatusEnum bookingStatus) {
         PageRequest pageRequest = PageRequest.of(page, size);
         List<BookingResponseDto> resp = new ArrayList<>();
         ApplicationUser patient = loggedUser.getInfo();
