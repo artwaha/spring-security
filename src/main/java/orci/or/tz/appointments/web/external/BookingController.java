@@ -285,6 +285,44 @@ public class BookingController implements BookingApi {
 
     }
 
+    @Override
+    public ResponseEntity<GenericResponse<List<BookingResponseDto>>> SearchWithCriteria(int page, int size, LocalDate startDate, LocalDate endDate, BookingStatusEnum bookingStatus) {
+        PageRequest pageRequest = PageRequest.of(page, size);
+        List<BookingResponseDto> resp = new ArrayList<>();
+        ApplicationUser patient = loggedUser.getInfo();
+
+        List<Booking> appointments = new ArrayList<>();
+        Integer totalCount = 0;
+
+        if(bookingStatus==null && startDate== null && endDate == null){
+            appointments = bookingService.GetAllPatientAppointments(patient, pageRequest);
+            totalCount = bookingService.countAppointmentsForASpecificPatient(patient);
+        }else
+        if(bookingStatus!=null && startDate!= null && endDate != null)
+        {
+            appointments = bookingService.GetAllPatientAppointmentsByDateRangeAndBookingStatus(startDate, endDate, bookingStatus, patient, pageRequest);
+            totalCount = bookingService.countAppointmentsByBookingStatusAndDateRange(bookingStatus,startDate,endDate, patient);
+        }else
+        if(bookingStatus!=null && startDate== null && endDate == null)
+        {
+            appointments = bookingService.GetAllPatientAppointmentsByBookingStatus( bookingStatus, patient, pageRequest);
+            totalCount = bookingService.countAppointmentsByBookingStatusAndPatient(bookingStatus, patient);
+        }
+
+        for (Booking appointment : appointments) {
+            BookingResponseDto booking = commons.GenerateBookingResponseDto(appointment);
+            resp.add(booking);
+        }
+
+        GenericResponse<List<BookingResponseDto>> response = new GenericResponse<>();
+        response.setCurrentPage(page);
+        response.setPageSize(size);
+        response.setTotalItems(totalCount);
+        response.setTotalPages(commons.GetTotalNumberOfPages(totalCount, size));
+        response.setData(resp);
+        return ResponseEntity.ok(response);
+    }
+
     // this endpoint Cancels A specific Appointment before the Appointment is reached
     @Override
     public ResponseEntity<BookingResponseDto> CanCelAnAppointment(Long id) throws ResourceNotFoundException, OperationFailedException {

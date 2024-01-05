@@ -59,6 +59,18 @@ public interface BookingApi {
             @RequestParam(required = false) BookingStatusEnum bookingStatus
     ) ;
 
+
+    @ApiOperation(value = "Search with Criterias",
+            notes = "Search With Ceiterias")
+    @GetMapping(value = "/search", produces = "application/json")
+    ResponseEntity<GenericResponse<List<BookingResponseDto>>> SearchWithCriteria(
+            @RequestParam(defaultValue = "0", required = false) int page,
+            @RequestParam(defaultValue = "10", required = false) int size,
+            @RequestParam(required = false) LocalDate startDate,
+            @RequestParam(required = false) LocalDate endDate,
+            @RequestParam(required = false) BookingStatusEnum bookingStatus
+    ) ;
+
     // An Endpoint to Cancel The Appointments
     @ApiOperation(value = "Cancel An Appointment that was created before the Appointment Day Only",
             notes = "Cancel An Appointment that was created before the Appointment Day Only")
