@@ -105,39 +105,29 @@ public class PatientController implements PatientApi {
             ApplicationUser user = patientFromDB.get();
 
             if (user.getConfirmed().equals(false)) {
-                user.setConfirmed(false);
-                patientService.SavePatient(user);
+
                 PatientDto patientDto = commons.GeneratePatientDTO(user);
                 return ResponseEntity.ok(patientDto);
             } else {
 
-//                if (user.getOtp() != null) {
-//
-//                    if (user.getValidUntil().isAfter(LocalDateTime.now())) {
-//                        // validation done here
-////                        user.setConfirmed(true);
-////                        patientService.SavePatient(user);
-////                        Long userId = user.getId();
-////                        // Genarate the token for our user
-////                         refreshTokenServiceImpl.createRefreshToken(userId);
-//                        PatientDto patientDto = commons.GeneratePatientDTO(user);
-//                        return ResponseEntity.ok(patientDto);
-//                    }else{
-//                        // I have to generate the token
-//                        user.setOtp(null);
-//                        patientService.SavePatient(user);
-//                        PatientDto patientDto = commons.GeneratePatientDTO(user);
-//                        return ResponseEntity.ok(patientDto);
-//                    }
-//                } else {
-//                    commons.GeneratePatient(user);
-//                    PatientDto patientDto = commons.GeneratePatientDTO(user);
-//                    return ResponseEntity.ok(patientDto);
-//                }
+                if (user.getOtp() != null) {
 
-                commons.GenerateOTP(user);
-                PatientDto patientDto = commons.GeneratePatientDTO(user);
-                return ResponseEntity.ok(patientDto);
+                    if (user.getValidUntil().isAfter(LocalDateTime.now())) {
+
+                        PatientDto patientDto = commons.GeneratePatientDTO(user);
+                        return ResponseEntity.ok(patientDto);
+                    }else{
+                        // I have to generate the token
+                        commons.GenerateOTP(user);
+                        PatientDto patientDto = commons.GeneratePatientDTO(user);
+                        return ResponseEntity.ok(patientDto);
+                    }
+                } else {
+                    commons.GenerateOTP(user);
+                    PatientDto patientDto = commons.GeneratePatientDTO(user);
+                    return ResponseEntity.ok(patientDto);
+                }
+
             }
 
         }
@@ -170,6 +160,40 @@ public class PatientController implements PatientApi {
             throw new IOException("There is internal operation issues");
         }
 
+
+    }
+
+    @Override
+    public ResponseEntity<PatientDto> ResendOTP(String regNo) throws ResourceNotFoundException, OperationFailedException {
+        Optional<ApplicationUser> patient = patientService.GetPatientByRegistrationNumber(regNo);
+
+        if(!patient.isPresent()){
+            throw  new ResourceNotFoundException("Patient with the registration Number does not exist");
+        }
+
+        ApplicationUser p = patient.get();
+
+        if(p.getOtp() == null){
+            throw new OperationFailedException("User does not have valid OTP");
+        }
+        else {
+            if (p.getResendCount() < 4) {
+                LocalDateTime resendTime = p.getResendUntil();
+
+                if(resendTime.isBefore(LocalDateTime.now())){
+                    commons.ResendOTP(p);
+                    PatientDto patientDto = commons.GeneratePatientDTO(p);
+                    return ResponseEntity.ok(patientDto);
+
+                }else{
+                    throw new OperationFailedException("Please wait for OTP Resend Time");
+                }
+
+
+            } else {
+                throw new OperationFailedException("Resend Count for the day is Exhausted");
+            }
+        }
 
     }
 

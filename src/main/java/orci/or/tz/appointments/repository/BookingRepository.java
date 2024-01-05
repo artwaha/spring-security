@@ -19,7 +19,7 @@ import orci.or.tz.appointments.enums.BookingStatusEnum;
 public interface BookingRepository extends JpaRepository<Booking, Long> {
     Optional<Booking> findByIdAndPatient(Long id, ApplicationUser patient);
     List<Booking> findAllByPatientOrderByCreatedDateDesc(ApplicationUser patient, Pageable pageable);
-    List<Booking> findAllByOrderByCreatedDateDesc( Pageable pageable);
+    List<Booking> findAllByOrderByAppointmentDateDesc( Pageable pageable);
 
     List<Booking> findAllByBookingStatusAndPatientOrderByCreatedDateDesc(
         BookingStatusEnum bookingStatus, ApplicationUser patient, Pageable pageable
@@ -27,14 +27,9 @@ public interface BookingRepository extends JpaRepository<Booking, Long> {
 
 
     // A custom to search appointments by Date Range and Status
-    List<Booking> findAllByCreatedDateBetweenAndBookingStatusAndPatientOrderByCreatedDateDesc(
-        LocalDate startDate, LocalDate endDate, BookingStatusEnum bookingStatus, ApplicationUser patient, Pageable pageable
-    );
+    List<Booking> findAllByAppointmentDateBetweenAndBookingStatusAndPatientOrderByCreatedDateDesc(LocalDate startDate, LocalDate endDate, BookingStatusEnum bookingStatus, ApplicationUser patient, Pageable pageable);
 
-
-    List<Booking> findAllByCreatedDateBetweenAndPatientOrderByCreatedDateDesc(
-        LocalDate startDate, LocalDate endDate, ApplicationUser patient, Pageable pageable
-    );
+    List<Booking> findAllByCreatedDateBetweenAndPatientOrderByCreatedDateDesc(LocalDate startDate, LocalDate endDate, ApplicationUser patient, Pageable pageable);
 
     // this method will return the appointments tat are upcoming and not Attended or cancelled
     List<Booking> findByPatientAndBookingStatusIn(ApplicationUser patient, 
@@ -49,7 +44,7 @@ public interface BookingRepository extends JpaRepository<Booking, Long> {
     // A method to count the items according to theri status
     long countByBookingStatusAndPatient(BookingStatusEnum bookingStatus, ApplicationUser patient);
 
-    long countByBookingStatusAndCreatedDateBetweenAndPatient(BookingStatusEnum bookingStatus, 
+    long countByBookingStatusAndAppointmentDateBetweenAndPatient(BookingStatusEnum bookingStatus,
         LocalDate startDate, LocalDate endDate, ApplicationUser patient);
 
     long countByCreatedDateBetweenAndPatient(LocalDate statDate, LocalDate enDate, ApplicationUser patient);

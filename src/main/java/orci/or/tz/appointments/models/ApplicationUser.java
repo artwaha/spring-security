@@ -53,6 +53,12 @@ public class ApplicationUser extends Auditable<String> implements Serializable {
     @Column(name = "valid_until", nullable = true)
     private LocalDateTime validUntil;
 
+    @Column(name = "resend_until", nullable = true)
+    private LocalDateTime resendUntil;
+
+    @Column(name = "resend_count", nullable = true)
+    private Integer resendCount = 0;
+
     @Column(name = "status", nullable = true)
     private String status;
 

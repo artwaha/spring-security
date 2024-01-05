@@ -41,7 +41,22 @@ public class Commons {
         String password = generator.generateRandomNumbers(6);
         u.setOtp(password);
         u.setValidUntil(LocalDateTime.now().toLocalDate().atTime(23,59,59));
+        u.setResendUntil(LocalDateTime.now().plusMinutes(3));
+        patientService.SavePatient(u);
+        String msg = "Ndugu " + u.getFullName()
+                + ", Tafadhali tumia nenosiri hili "
+                + u.getOtp() + " kuingia katika mfumo.";
+        SmsDto sms = new SmsDto();
+        sms.setSms(msg);
+        sms.setMobile(u.getMobile());
+        notificationService.SendSMSToQueue(sms);
 
+    }
+
+
+    public void ResendOTP(ApplicationUser u) {
+        u.setResendUntil(LocalDateTime.now().plusMinutes(3));
+        u.setResendCount(u.getResendCount()+1);
         patientService.SavePatient(u);
         String msg = "Ndugu " + u.getFullName()
                 + ", Tafadhali tumia nenosiri hili "

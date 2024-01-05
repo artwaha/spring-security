@@ -43,7 +43,7 @@ public class BookingService {
 
     public List<Booking> GetAllPatientAppointmentsByDateRangeAndBookingStatus(LocalDate startDate,
      LocalDate endDate, BookingStatusEnum bookingStatus, ApplicationUser patient, Pageable pageable) {
-        return bookingRepository.findAllByCreatedDateBetweenAndBookingStatusAndPatientOrderByCreatedDateDesc(startDate, endDate, bookingStatus, patient, pageable);
+        return bookingRepository.findAllByAppointmentDateBetweenAndBookingStatusAndPatientOrderByCreatedDateDesc(startDate, endDate, bookingStatus, patient, pageable);
     }
 
     public List<Booking> GetAllAppointmnentsByDateRange(LocalDate startDate,
@@ -103,7 +103,7 @@ public class BookingService {
 
 
     public List<Booking> GetAllAppointments( Pageable pageable){
-        return bookingRepository.findAllByOrderByCreatedDateDesc(pageable);
+        return bookingRepository.findAllByOrderByAppointmentDateDesc(pageable);
     }
 
     public int CountAllAppointments() {
