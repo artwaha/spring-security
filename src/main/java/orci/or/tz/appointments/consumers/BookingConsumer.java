@@ -1,5 +1,6 @@
 package orci.or.tz.appointments.consumers;
 
+import com.squareup.okhttp.*;
 import orci.or.tz.appointments.dto.booking.BookingInayaDto;
 import orci.or.tz.appointments.dto.notification.BookingDto;
 import orci.or.tz.appointments.enums.BookingStatusEnum;
@@ -50,24 +51,36 @@ public class BookingConsumer {
                 JSONObject json = new JSONObject(dto);
                 System.out.println( " ----Data zinapelekwa Inaya  ->" + String.valueOf(json));
 
-                var httprequest = HttpRequest.newBuilder()
-                        .uri(URI.create(bookingEndpoint))
-                        .header("Content-Type", "application/json")
-                        .POST(HttpRequest.BodyPublishers.ofString(String.valueOf(json)))
+                OkHttpClient client = new OkHttpClient();
+                Request request = new Request.Builder()
+                        .url(bookingEndpoint)
+                        .post(RequestBody.create(
+                                MediaType.parse("application/json"), String.valueOf(json)))
                         .build();
 
-                var client = HttpClient.newHttpClient();
-                var httpresponse = client.send(httprequest, HttpResponse.BodyHandlers.ofString());
+                Response response = client.newCall(request).execute();
 
-                JSONObject json2 = new JSONObject(httpresponse.body());
-                System.out.println( " ----Inaya Response ->" + String.valueOf(json2));
+//                HttpRequest req = HttpRequest.newBuilder()
+//                        .uri(URI.create(bookingEndpoint))
+//                        .header("Content-Type", "application/json")
+//                        .POST(HttpRequest.BodyPublishers.ofString(String.valueOf(json)))
+//                        .build();
+//
+//                var client = HttpClient.newHttpClient();
+//                var httpresponse = client.send(httprequest, HttpResponse.BodyHandlers.ofString());
 
-                // Update Booking status to SUBMITTED if sent successful
+                if (response.isSuccessful() && response.code() == 200) {
 
-                if(json2.getInt("code") ==200){
-                    bk.setPushed(true);
-                    bk.setBookingStatus(BookingStatusEnum.UPCOMING);
-                    bookingService.SaveAppointment(bk);
+                    JSONObject json2 = new JSONObject(response.body());
+                    System.out.println(" ----Inaya Response ->" + String.valueOf(json2));
+
+                    // Update Booking status to SUBMITTED if sent successful
+
+                    if (json2.getInt("code") == 200) {
+                        bk.setPushed(true);
+                        bk.setBookingStatus(BookingStatusEnum.UPCOMING);
+                        bookingService.SaveAppointment(bk);
+                    }
                 }
             }else{
                 System.out.println( " ----Booking haijapatikana  " );
