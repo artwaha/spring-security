@@ -365,7 +365,7 @@ public class BookingController implements BookingApi {
             throw new ResourceNotFoundException("The Appointmnet with the provided Id " + id + " is Not Found");
         }
 
-        if (appointment.get().getBookingStatus() != BookingStatusEnum.PENDING || appointment.get().getBookingStatus() != BookingStatusEnum.UPCOMING) {
+        if (appointment.get().getBookingStatus() == BookingStatusEnum.ATTENDED || appointment.get().getBookingStatus() == BookingStatusEnum.MISSED || appointment.get().getBookingStatus() == BookingStatusEnum.PENDING || appointment.get().getBookingStatus() == BookingStatusEnum.CANCELLED ) {
             throw new OperationFailedException("Sorry, You Can Only Update The Appointments That You Have Not Attended " + " Only And not The Appointments That YoU Missed To Attend And Cancelled Appoints");
         }
 
