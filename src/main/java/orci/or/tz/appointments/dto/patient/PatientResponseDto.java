@@ -16,6 +16,7 @@ public class PatientResponseDto {
     private String mobile;
     private String patientType;
     private String billingCategory;
+    private Long inayaId;
     private LocalDateTime resendUntil;
     private Integer resendCount;
 }

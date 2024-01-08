@@ -23,4 +23,7 @@ public interface DoctorApi {
             @RequestParam(defaultValue = "10", required = false) int size
     ) throws ResourceNotFoundException;
 
+
+
+
 }

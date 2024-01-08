@@ -27,8 +27,8 @@ public interface PatientApi {
     ResponseEntity<PatientDto> UpdatePatientMobileNumber(@RequestBody PatientUpdateMobileDto patientUpdateMobileDto) throws ResourceNotFoundException, IOException;
 
 
-    @ApiOperation(value = "View All Patient By Registration Number", notes = "View All Patient By Registration Number")
-    @RequestMapping(value = "resend/otp", method = RequestMethod.POST, produces = "application/json")
+    @ApiOperation(value = "Resend OTP", notes = "Resend OTP")
+    @RequestMapping(value = "resend/otp", method = RequestMethod.GET, produces = "application/json")
     ResponseEntity<PatientDto> ResendOTP(@RequestParam String regNo) throws ResourceNotFoundException, OperationFailedException;
 
 

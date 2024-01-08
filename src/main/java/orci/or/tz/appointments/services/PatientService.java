@@ -41,6 +41,10 @@ public class PatientService {
         return patientRepo.findAllByOrderByIdDesc(pageable);
     }
 
+    public Long CountAllPatients(){
+        return patientRepo.count();
+    }
+
     public Optional<ApplicationUser> GetPatientById(Long id){
         return patientRepo.findById(id);
     }
