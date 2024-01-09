@@ -22,6 +22,8 @@ public class TokenValidityTask {
         for(ApplicationUser u : users){
             u.setOtp(null);
             u.setValidUntil(null);
+            u.setValidUntil(null);
+            u.setResendCount(0);
             userService.SavePatient(u);
         }
     }
