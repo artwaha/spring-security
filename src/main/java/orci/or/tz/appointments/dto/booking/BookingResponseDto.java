@@ -16,4 +16,5 @@ public class BookingResponseDto {
     private LocalDate createdDate;
     private boolean isPushed;
     private BookingStatusEnum bookingStatus;
+    private String cancelationReason;
 }

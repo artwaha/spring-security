@@ -90,7 +90,7 @@ public class BookinController implements BookApi {
         PageRequest pageRequest = PageRequest.of(page, size);
         List<BookingResponseDto> resp = new ArrayList<>();
 
-        List<Booking> appointments = bookingService.GetAllAppointmentsByStatus(bookingStatus,pageRequest);
+        List<Booking> appointments = bookingService.GetAllAppointmentsByStatus(bookingStatus, pageRequest);
 
         for (Booking appointment : appointments) {
             BookingResponseDto booking = commons.GenerateBookingResponseDto(appointment);
@@ -108,11 +108,11 @@ public class BookinController implements BookApi {
     }
 
     @Override
-    public ResponseEntity<GenericResponse<List<BookingResponseDto>>> GetAllAppointmentsByStatusAndDate(int page, int size,@DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate startDate, @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate endDate, BookingStatusEnum bookingStatus) {
+    public ResponseEntity<GenericResponse<List<BookingResponseDto>>> GetAllAppointmentsByStatusAndDate(int page, int size, @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate startDate, @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate endDate, BookingStatusEnum bookingStatus) {
         PageRequest pageRequest = PageRequest.of(page, size);
         List<BookingResponseDto> resp = new ArrayList<>();
 
-        List<Booking> appointments = bookingService.GetAllAppointmentsByStatusAndDate(bookingStatus,startDate,endDate,pageRequest);
+        List<Booking> appointments = bookingService.GetAllAppointmentsByStatusAndDate(bookingStatus, startDate, endDate, pageRequest);
 
         for (Booking appointment : appointments) {
             BookingResponseDto booking = commons.GenerateBookingResponseDto(appointment);
@@ -122,7 +122,7 @@ public class BookinController implements BookApi {
         GenericResponse<List<BookingResponseDto>> response = new GenericResponse<>();
         response.setCurrentPage(page);
         response.setPageSize(size);
-        Integer totalCount = bookingService.CountAllAppointmentsByStatusAndDate(bookingStatus,startDate,endDate);
+        Integer totalCount = bookingService.CountAllAppointmentsByStatusAndDate(bookingStatus, startDate, endDate);
         response.setTotalItems(totalCount);
         response.setTotalPages(commons.GetTotalNumberOfPages(totalCount, size));
         response.setData(resp);
@@ -133,7 +133,7 @@ public class BookinController implements BookApi {
     public ResponseEntity<?> ResendToInaya(Long bookingId) throws ResourceNotFoundException {
         Optional<Booking> booking = bookingService.GetAppointmentById(bookingId);
 
-        if(!booking.isPresent()){
+        if (!booking.isPresent()) {
             throw new ResourceNotFoundException("Booking with the ID is not Available");
         }
 
@@ -146,7 +146,7 @@ public class BookinController implements BookApi {
     public ResponseEntity<BookingResponseDto> CreateAppointment(BookRequestDto bookingRequestDto) throws ResourceNotFoundException, IOException, OperationFailedException {
         Optional<ApplicationUser> pat = patientService.GetPatientById(bookingRequestDto.getPatientId());
 
-        if(!pat.isPresent()){
+        if (!pat.isPresent()) {
             throw new ResourceNotFoundException("Patient with the provided ID does not exist");
         }
 
@@ -304,6 +304,384 @@ public class BookinController implements BookApi {
 
         BookingResponseDto resp = commons.GenerateBookingResponseDto(booking);
         return ResponseEntity.ok(resp);
+    }
+
+    @Override
+    public ResponseEntity<BookingResponseDto> UpdateTheAppointmentDate(Long id, BookingUpdateDto bookingUpdateDto) throws ResourceNotFoundException, OperationFailedException, IOException {
+        LocalDate updatedAppointmentDate = bookingUpdateDto.getUpdatedAppointmentDate();
+        Long doctorId = bookingUpdateDto.getDoctorId();
+
+
+        Optional<Booking> appointment = bookingService.GetAppointmentById(id);
+        if (!appointment.isPresent()) {
+            throw new ResourceNotFoundException("The Appointmnet with the provided Id " + id + " is Not Found");
+        }
+
+        ApplicationUser patient = appointment.get().getPatient();
+
+        if (appointment.get().getBookingStatus() == BookingStatusEnum.ATTENDED || appointment.get().getBookingStatus() == BookingStatusEnum.MISSED || appointment.get().getBookingStatus() == BookingStatusEnum.PENDING || appointment.get().getBookingStatus() == BookingStatusEnum.CANCELLED) {
+            throw new OperationFailedException("Sorry, You Can Only Update The Appointments That You Have Not Attended " + " Only And not The Appointments That YoU Missed To Attend And Cancelled Appoints");
+        }
+
+        if (updatedAppointmentDate != null && doctorId != null) {
+            // change both the doctor Id and date
+            if (updatedAppointmentDate.isBefore(LocalDate.now())) {
+                throw new OperationFailedException("You cannot Place an Appointment For Past Dates, But Only for The Current And Future Dates");
+            }
+
+            Optional<Doctor> doctor = doctorService.GetDoctorById(doctorId);
+            if (!doctor.isPresent()) {
+                throw new ResourceNotFoundException("The Specialist with provided Id " + doctorId + " is Not Found");
+            }
+
+            if (!dateValidator.isHoliday(updatedAppointmentDate)) {
+                if (!dateValidator.isWeekend(updatedAppointmentDate)) {
+                    // pass some logic to make the appointment
+
+                    int doctorInayaId = doctor.get().getInayaId();
+                    String itemsCountNode = inayaService.GetAppointmentsCountToASpecificSpecialist(doctorInayaId, updatedAppointmentDate);
+                    if (itemsCountNode == null) {
+                        throw new IOException("The selected Doctor has a NULL value to their bookings count ");
+                    }
+
+                    ObjectMapper objectMapper = new ObjectMapper();
+                    JsonNode jsonNode = objectMapper.readTree(itemsCountNode);
+                    int totalItems = jsonNode.hasNonNull("totalItems") ? jsonNode.get("totalItems").asInt() : 0;
+
+                    //validate the working day of the chosen specialist
+                    String dayOfWeek = DateValidator.getDayOfWeek(updatedAppointmentDate);
+                    switch (dayOfWeek.toUpperCase()) {
+                        case "MONDAY":
+                            if (doctor.get().isMonday()) {
+                                if (totalItems < 20) {
+                                    Booking booking = appointment.get();
+                                    booking.setAppointmentDate(updatedAppointmentDate);
+                                    booking.setDoctor(doctor.get());
+                                    booking.setPushed(false);
+                                    bookingService.SaveAppointment(booking);
+                                    BookingResponseDto bookingResponseDto = commons.GenerateBookingResponseDto(booking);
+                                    return ResponseEntity.ok(bookingResponseDto);
+                                } else {
+                                    throw new OperationFailedException("We're sorry, but appointments with " + doctor.get().getDoctorName() + " on this dayy you prefer are fully booked. Please choose another day or different specialist.");
+                                }
+                            } else {
+                                throw new OperationFailedException("WEe're sorry, but " + doctor.get().getDoctorName() + " is not available on " + dayOfWeek + ". Please select another day or a different specialist.");
+                            }
+
+                        case "TUESDAY":
+                            if (doctor.get().isTuesday()) {
+                                if (totalItems < 20) {
+                                    Booking booking = appointment.get();
+                                    booking.setAppointmentDate(updatedAppointmentDate);
+                                    booking.setDoctor(doctor.get());
+                                    booking.setPushed(false);
+                                    bookingService.SaveAppointment(booking);
+                                    BookingResponseDto bookingResponseDto = commons.GenerateBookingResponseDto(booking);
+                                    return ResponseEntity.ok(bookingResponseDto);
+                                } else {
+                                    throw new OperationFailedException("We're sorry, but appointments with " + doctor.get().getDoctorName() + " on this dayy you prefer are fully booked. Please choose another day or different specialist.");
+                                }
+                            } else {
+                                throw new OperationFailedException("WEe're sorry, but " + doctor.get().getDoctorName() + " is not available on " + dayOfWeek + ". Please select another day or a different specialist.");
+                            }
+
+                        case "WEDNESDAY":
+                            if (doctor.get().isWednesday()) {
+                                if (totalItems < 20) {
+                                    Booking booking = appointment.get();
+                                    booking.setAppointmentDate(updatedAppointmentDate);
+                                    booking.setDoctor(doctor.get());
+                                    booking.setPushed(false);
+                                    bookingService.SaveAppointment(booking);
+                                    BookingResponseDto bookingResponseDto = commons.GenerateBookingResponseDto(booking);
+                                    return ResponseEntity.ok(bookingResponseDto);
+                                } else {
+                                    throw new OperationFailedException("We're sorry, but appointments with " + doctor.get().getDoctorName() + " on this dayy you prefer are fully booked. Please choose another day or different specialist.");
+                                }
+                            } else {
+                                throw new OperationFailedException("WEe're sorry, but " + doctor.get().getDoctorName() + " is not available on " + dayOfWeek + ". Please select another day or a different specialist.");
+                            }
+
+                        case "THURSDAY":
+                            if (doctor.get().isThursday()) {
+                                if (totalItems < 20) {
+                                    Booking booking = appointment.get();
+                                    booking.setAppointmentDate(updatedAppointmentDate);
+                                    booking.setDoctor(doctor.get());
+                                    booking.setPushed(false);
+                                    bookingService.SaveAppointment(booking);
+                                    BookingResponseDto bookingResponseDto = commons.GenerateBookingResponseDto(booking);
+                                    return ResponseEntity.ok(bookingResponseDto);
+                                } else {
+                                    throw new OperationFailedException("We're sorry, but appointments with " + doctor.get().getDoctorName() + " on this dayy you prefer are fully booked. Please choose another day or different specialist.");
+                                }
+                            } else {
+                                throw new OperationFailedException("WEe're sorry, but " + doctor.get().getDoctorName() + " is not available on " + dayOfWeek + ". Please select another day or a different specialist.");
+                            }
+
+                        case "FRIDAY":
+                            if (doctor.get().isFriday()) {
+                                if (totalItems < 20) {
+                                    Booking booking = appointment.get();
+                                    booking.setAppointmentDate(updatedAppointmentDate);
+                                    booking.setDoctor(doctor.get());
+                                    booking.setPushed(false);
+                                    bookingService.SaveAppointment(booking);
+                                    BookingResponseDto bookingResponseDto = commons.GenerateBookingResponseDto(booking);
+                                    return ResponseEntity.ok(bookingResponseDto);
+                                } else {
+                                    throw new OperationFailedException("We're sorry, but appointments with " + doctor.get().getDoctorName() + " on this dayy you prefer are fully booked. Please choose another day or different specialist.");
+                                }
+                            } else {
+                                throw new OperationFailedException("WEe're sorry, but " + doctor.get().getDoctorName() + " is not available on " + dayOfWeek + ". Please select another day or a different specialist.");
+                            }
+
+                        default:
+                            throw new OperationFailedException("You cannot amke an appointment with any of our specialist during the wekends");
+                    }
+
+                } else {
+                    throw new OperationFailedException("You cannot amke an appointment with any of our specialist during the wekends");
+                }
+            } else {
+                String holidayName = dateValidator.getTheHoliDayName(updatedAppointmentDate);
+                throw new OperationFailedException("We're sorry, but appointments are not available on holidays " + holidayName + ". Pleasechoose another dayy for your appointment");
+            }
+
+        } else if (updatedAppointmentDate != null) {
+            // modify the date only
+            if (!dateValidator.isHoliday(updatedAppointmentDate)) {
+                if (!dateValidator.isWeekend(updatedAppointmentDate)) {
+                    // pass some logic to make the appointment
+
+                    int doctorInayaId = appointment.get().getDoctor().getInayaId();
+                    Doctor doctor = appointment.get().getDoctor();
+                    String itemsCountNode = inayaService.GetAppointmentsCountToASpecificSpecialist(doctorInayaId, updatedAppointmentDate);
+                    if (itemsCountNode == null) {
+                        throw new IOException("The selected Doctor has a NULL value to their bookings count ");
+                    }
+
+                    ObjectMapper objectMapper = new ObjectMapper();
+                    JsonNode jsonNode = objectMapper.readTree(itemsCountNode);
+                    int totalItems = jsonNode.hasNonNull("totalItems") ? jsonNode.get("totalItems").asInt() : 0;
+
+                    //validate the working day of the chosen specialist
+                    String dayOfWeek = DateValidator.getDayOfWeek(updatedAppointmentDate);
+                    switch (dayOfWeek.toUpperCase()) {
+                        case "MONDAY":
+                            if (doctor.isMonday()) {
+                                if (totalItems < 20) {
+                                    Booking booking = appointment.get();
+                                    booking.setAppointmentDate(updatedAppointmentDate);
+                                    booking.setPushed(false);
+                                    bookingService.SaveAppointment(booking);
+                                    BookingResponseDto bookingResponseDto = commons.GenerateBookingResponseDto(booking);
+                                    return ResponseEntity.ok(bookingResponseDto);
+                                } else {
+                                    throw new OperationFailedException("We're sorry, but appointments with " + doctor.getDoctorName() + " on this dayy you prefer are fully booked. Please choose another day or different specialist.");
+                                }
+                            } else {
+                                throw new OperationFailedException("WEe're sorry, but " + doctor.getDoctorName() + " is not available on " + dayOfWeek + ". Please select another day or a different specialist.");
+                            }
+
+                        case "TUESDAY":
+                            if (doctor.isTuesday()) {
+                                if (totalItems < 20) {
+                                    Booking booking = appointment.get();
+                                    booking.setAppointmentDate(updatedAppointmentDate);
+                                    booking.setPushed(false);
+                                    bookingService.SaveAppointment(booking);
+                                    BookingResponseDto bookingResponseDto = commons.GenerateBookingResponseDto(booking);
+                                    return ResponseEntity.ok(bookingResponseDto);
+                                } else {
+                                    throw new OperationFailedException("We're sorry, but appointments with " + doctor.getDoctorName() + " on this day you prefer are fully booked. Please choose another day or different specialist.");
+                                }
+                            } else {
+                                throw new OperationFailedException("WEe're sorry, but " + doctor.getDoctorName() + " is not available on " + dayOfWeek + ". Please select another day or a different specialist.");
+                            }
+
+                        case "WEDNESDAY":
+                            if (doctor.isWednesday()) {
+                                if (totalItems < 20) {
+                                    Booking booking = appointment.get();
+                                    booking.setAppointmentDate(updatedAppointmentDate);
+                                    booking.setPushed(false);
+                                    bookingService.SaveAppointment(booking);
+                                    BookingResponseDto bookingResponseDto = commons.GenerateBookingResponseDto(booking);
+                                    return ResponseEntity.ok(bookingResponseDto);
+                                } else {
+                                    throw new OperationFailedException("We're sorry, but appointments with " + doctor.getDoctorName() + " on this day you prefer are fully booked. Please choose another day or different specialist.");
+                                }
+                            } else {
+                                throw new OperationFailedException("WEe're sorry, but " + doctor.getDoctorName() + " is not available on " + dayOfWeek + ". Please select another day or a different specialist.");
+                            }
+
+                        case "THURSDAY":
+                            if (doctor.isThursday()) {
+                                if (totalItems < 20) {
+                                    Booking booking = appointment.get();
+                                    booking.setAppointmentDate(updatedAppointmentDate);
+                                    booking.setPushed(false);
+                                    bookingService.SaveAppointment(booking);
+                                    BookingResponseDto bookingResponseDto = commons.GenerateBookingResponseDto(booking);
+                                    return ResponseEntity.ok(bookingResponseDto);
+                                } else {
+                                    throw new OperationFailedException("We're sorry, but appointments with " + doctor.getDoctorName() + " on this day you prefer are fully booked. Please choose another day or different specialist.");
+                                }
+                            } else {
+                                throw new OperationFailedException("WEe're sorry, but " + doctor.getDoctorName() + " is not available on " + dayOfWeek + ". Please select another day or a different specialist.");
+                            }
+
+                        case "FRIDAY":
+                            if (doctor.isFriday()) {
+                                if (totalItems < 20) {
+                                    Booking booking = appointment.get();
+                                    booking.setAppointmentDate(updatedAppointmentDate);
+                                    booking.setPushed(false);
+                                    bookingService.SaveAppointment(booking);
+                                    BookingResponseDto bookingResponseDto = commons.GenerateBookingResponseDto(booking);
+                                    return ResponseEntity.ok(bookingResponseDto);
+                                } else {
+                                    throw new OperationFailedException("We're sorry, but appointments with " + doctor.getDoctorName() + " on this day you prefer are fully booked. Please choose another day or different specialist.");
+                                }
+                            } else {
+                                throw new OperationFailedException("WEe're sorry, but " + doctor.getDoctorName() + " is not available on " + dayOfWeek + ". Please select another day or a different specialist.");
+                            }
+
+                        default:
+                            throw new OperationFailedException("You cannot amke an appointment with any of our specialist during the wekends");
+                    }
+
+                } else {
+                    throw new OperationFailedException("You cannot amke an appointment with any of our specialist during the wekends");
+                }
+            } else {
+                String holidayName = dateValidator.getTheHoliDayName(updatedAppointmentDate);
+                throw new OperationFailedException("We're sorry, but appointments are not available on holidays " + holidayName + ". Please choose another day for your appointment");
+            }
+
+        } else if (doctorId != null) {
+            // update the doctor Only
+            LocalDate appointmentDate = appointment.get().getAppointmentDate();
+            Optional<Doctor> doctor = doctorService.GetDoctorById(doctorId);
+            if (!doctor.isPresent()) {
+                throw new ResourceNotFoundException("The Specialist with provided Id " + doctorId + " is Not Found");
+            }
+
+            if (!dateValidator.isHoliday(appointmentDate)) {
+                if (!dateValidator.isWeekend(appointmentDate)) {
+                    // pass some logic to make the appointment
+
+                    int doctorInayaId = doctor.get().getInayaId();
+                    String itemsCountNode = inayaService.GetAppointmentsCountToASpecificSpecialist(doctorInayaId, appointmentDate);
+                    if (itemsCountNode == null) {
+                        throw new IOException("The selected Doctor has a NULL value to their bookings count ");
+                    }
+
+                    ObjectMapper objectMapper = new ObjectMapper();
+                    JsonNode jsonNode = objectMapper.readTree(itemsCountNode);
+                    int totalItems = jsonNode.hasNonNull("totalItems") ? jsonNode.get("totalItems").asInt() : 0;
+
+                    //validate the working day of the chosen specialist
+                    String dayOfWeek = DateValidator.getDayOfWeek(appointmentDate);
+                    switch (dayOfWeek.toUpperCase()) {
+                        case "MONDAY":
+                            if (doctor.get().isMonday()) {
+                                if (totalItems < 20) {
+                                    Booking booking = appointment.get();
+                                    booking.setDoctor(doctor.get());
+                                    booking.setPushed(false);
+                                    bookingService.SaveAppointment(booking);
+                                    BookingResponseDto bookingResponseDto = commons.GenerateBookingResponseDto(booking);
+                                    return ResponseEntity.ok(bookingResponseDto);
+                                } else {
+                                    throw new OperationFailedException("We're sorry, but appointments with " + doctor.get().getDoctorName() + " on this day you prefer are fully booked. Please choose another day or different specialist.");
+                                }
+                            } else {
+                                throw new OperationFailedException("WEe're sorry, but " + doctor.get().getDoctorName() + " is not available on " + dayOfWeek + ". Please select another day or a different specialist.");
+                            }
+
+                        case "TUESDAY":
+                            if (doctor.get().isTuesday()) {
+                                if (totalItems < 20) {
+                                    Booking booking = appointment.get();
+                                    booking.setDoctor(doctor.get());
+                                    booking.setPushed(false);
+                                    bookingService.SaveAppointment(booking);
+                                    BookingResponseDto bookingResponseDto = commons.GenerateBookingResponseDto(booking);
+                                    return ResponseEntity.ok(bookingResponseDto);
+                                } else {
+                                    throw new OperationFailedException("We're sorry, but appointments with " + doctor.get().getDoctorName() + " on this day you prefer are fully booked. Please choose another day or different specialist.");
+                                }
+                            } else {
+                                throw new OperationFailedException("WEe're sorry, but " + doctor.get().getDoctorName() + " is not available on " + dayOfWeek + ". Please select another day or a different specialist.");
+                            }
+
+                        case "WEDNESDAY":
+                            if (doctor.get().isWednesday()) {
+                                if (totalItems < 20) {
+                                    Booking booking = appointment.get();
+                                    booking.setDoctor(doctor.get());
+                                    booking.setPushed(false);
+                                    bookingService.SaveAppointment(booking);
+                                    BookingResponseDto bookingResponseDto = commons.GenerateBookingResponseDto(booking);
+                                    return ResponseEntity.ok(bookingResponseDto);
+                                } else {
+                                    throw new OperationFailedException("We're sorry, but appointments with " + doctor.get().getDoctorName() + " on this day you prefer are fully booked. Please choose another day or different specialist.");
+                                }
+                            } else {
+                                throw new OperationFailedException("WEe're sorry, but " + doctor.get().getDoctorName() + " is not available on " + dayOfWeek + ". Please select another day or a different specialist.");
+                            }
+
+                        case "THURSDAY":
+                            if (doctor.get().isThursday()) {
+                                if (totalItems < 20) {
+                                    Booking booking = appointment.get();
+                                    booking.setDoctor(doctor.get());
+                                    booking.setPushed(false);
+                                    bookingService.SaveAppointment(booking);
+                                    BookingResponseDto bookingResponseDto = commons.GenerateBookingResponseDto(booking);
+                                    return ResponseEntity.ok(bookingResponseDto);
+                                } else {
+                                    throw new OperationFailedException("We're sorry, but appointments with " + doctor.get().getDoctorName() + " on this day you prefer are fully booked. Please choose another day or different specialist.");
+                                }
+                            } else {
+                                throw new OperationFailedException("WEe're sorry, but " + doctor.get().getDoctorName() + " is not available on " + dayOfWeek + ". Please select another day or a different specialist.");
+                            }
+
+                        case "FRIDAY":
+                            if (doctor.get().isFriday()) {
+                                if (totalItems < 20) {
+                                    Booking booking = appointment.get();
+                                    booking.setDoctor(doctor.get());
+                                    booking.setPushed(false);
+                                    bookingService.SaveAppointment(booking);
+                                    BookingResponseDto bookingResponseDto = commons.GenerateBookingResponseDto(booking);
+                                    return ResponseEntity.ok(bookingResponseDto);
+                                } else {
+                                    throw new OperationFailedException("We're sorry, but appointments with " + doctor.get().getDoctorName() + " on this day you prefer are fully booked. Please choose another day or different specialist.");
+                                }
+                            } else {
+                                throw new OperationFailedException("WEe're sorry, but " + doctor.get().getDoctorName() + " is not available on " + dayOfWeek + ". Please select another day or a different specialist.");
+                            }
+
+                        default:
+                            throw new OperationFailedException("You cannot amke an appointment with any of our specialist during the wekends");
+                    }
+
+                } else {
+                    throw new OperationFailedException("You cannot amke an appointment with any of our specialist during the wekends");
+                }
+            } else {
+                String holidayName = dateValidator.getTheHoliDayName(updatedAppointmentDate);
+                throw new OperationFailedException("We're sorry, but appointments are not available on holidays " + holidayName + ". Please choose another day for your appointment");
+            }
+
+        } else {
+            //then if no data provided return the booking object
+            BookingResponseDto bookingResponseDto = commons.GenerateBookingResponseDto(appointment.get());
+            return ResponseEntity.ok(bookingResponseDto);
+        }
     }
 
 
