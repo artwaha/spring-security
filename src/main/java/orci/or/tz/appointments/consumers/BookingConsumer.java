@@ -51,23 +51,6 @@ public class BookingConsumer {
                 JSONObject json = new JSONObject(dto);
                 System.out.println(" ----Data zinapelekwa Inaya  ->" + json);
 
-//                OkHttpClient client = new OkHttpClient();
-//                Request request = new Request.Builder()
-//                        .url(bookingEndpoint)
-//                        .post(RequestBody.create(
-//                                MediaType.parse("application/json"), String.valueOf(json)))
-//                        .build();
-//
-//                Response response = client.newCall(request).execute();
-
-//                HttpRequest req = HttpRequest.newBuilder()
-//                        .uri(URI.create(bookingEndpoint))
-//                        .header("Content-Type", "application/json")
-//                        .POST(HttpRequest.BodyPublishers.ofString(String.valueOf(json)))
-//                        .build();
-//
-//                var client = HttpClient.newHttpClient();
-//                var httpresponse = client.send(httprequest, HttpResponse.BodyHandlers.ofString());
 
 
                 URL url = new URL(bookingEndpoint);
