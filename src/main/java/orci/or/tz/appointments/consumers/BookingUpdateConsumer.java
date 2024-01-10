@@ -1,7 +1,6 @@
 package orci.or.tz.appointments.consumers;
 
 import orci.or.tz.appointments.dto.booking.BookingInayaDto;
-import orci.or.tz.appointments.dto.booking.CancelDto;
 import orci.or.tz.appointments.dto.notification.BookingDto;
 import orci.or.tz.appointments.enums.BookingStatusEnum;
 import orci.or.tz.appointments.models.Booking;
@@ -18,10 +17,11 @@ import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.nio.charset.StandardCharsets;
 import java.util.Optional;
 
 @Component
-public class CancelationConsumer {
+public class BookingUpdateConsumer {
 
     @Autowired
     private BookingService bookingService;
@@ -29,10 +29,10 @@ public class CancelationConsumer {
     @Autowired
     private NotificationService notificationService;
 
-    @Value("${orci.inaya.api.cancel.url}")
-    private String cancelationEndpoint;
+    @Value("${orci.inaya.api.update.url}")
+    private String bookingEndpoint;
 
-    @RabbitListener(queues = "orci.cancelation.bookings")
+    @RabbitListener(queues = "orci.appointment.update.bookings")
     public void PushBookingToInaya(BookingDto b) {
         Optional<Booking> booking = bookingService.GetAppointmentById(b.getBookingId());
         System.out.println(" ----Booking hii  ->" + booking.get().getId());
@@ -40,29 +40,30 @@ public class CancelationConsumer {
 
             if (booking.isPresent()) {
                 Booking bk = booking.get();
-                CancelDto dto = new CancelDto();
-                dto.setBookingId(bk.getId());
-                dto.setCancelationReason(bk.getCancelationReason());
+                BookingInayaDto dto = new BookingInayaDto();
+                dto.setId(bk.getId());
+                dto.setAppointmentDate(bk.getAppointmentDate());
+                dto.setRegNo(bk.getPatient().getRegistrationNumber());
+                dto.setDoctorId(Long.valueOf(bk.getDoctor().getInayaId()));
 
                 // Send HTTP Request to Inaya API
                 JSONObject json = new JSONObject(dto);
                 System.out.println(" ----Data zinapelekwa Inaya  ->" + json);
 
 
-                URL url = new URL(cancelationEndpoint);
+                URL url = new URL(bookingEndpoint);
                 HttpURLConnection con = (HttpURLConnection) url.openConnection();
                 con.setRequestMethod("POST");
                 con.setRequestProperty("Content-Type", "application/json; utf-8");
                 con.setRequestProperty("Accept", "application/json");
                 con.setDoOutput(true);
 
-                try(OutputStream os = con.getOutputStream()) {
-                    byte[] input = json.toString().getBytes("utf-8");
+                try (OutputStream os = con.getOutputStream()) {
+                    byte[] input = json.toString().getBytes(StandardCharsets.UTF_8);
                     os.write(input, 0, input.length);
                 }
 
-                try(BufferedReader br = new BufferedReader(
-                        new InputStreamReader(con.getInputStream(), "utf-8"))) {
+                try (BufferedReader br = new BufferedReader(new InputStreamReader(con.getInputStream(), StandardCharsets.UTF_8))) {
                     StringBuilder response = new StringBuilder();
                     String responseLine = null;
                     while ((responseLine = br.readLine()) != null) {
@@ -73,11 +74,11 @@ public class CancelationConsumer {
 
                         if (json2.getInt("code") == 200) {
                             bk.setPushed(true);
-                            bk.setBookingStatus(BookingStatusEnum.CANCELLED);
+                            bk.setBookingStatus(BookingStatusEnum.UPCOMING);
                             bookingService.SaveAppointment(bk);
                         }
                     }
-                    System.out.println(" ----Cancelation Response ->" +response.toString());
+                    System.out.println(" ----Inaya Response ->" + response);
                 }
 
             } else {
@@ -85,7 +86,7 @@ public class CancelationConsumer {
             }
 
         } catch (Exception e) {
-            System.out.println("Failed to Push Cancelation to Inaya -> " + e.getMessage());
+            System.out.println("Failed to Push Booking to Inaya -> " + e.getMessage());
             notificationService.ResendBookingToQueue(b);
         }
     }

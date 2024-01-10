@@ -7,4 +7,8 @@ public enum BookingStatusEnum {
     MISSED,
     CANCELLED,
     UPCOMING,
+
+    PENDING_CANCELATION,
+
+    PENDING_UPDATION
 }

@@ -294,7 +294,7 @@ public class BookinController implements BookApi {
 
         // Update Booking as Cancelled
         Booking booking = appointment.get();
-        booking.setBookingStatus(BookingStatusEnum.CANCELLED);
+        booking.setBookingStatus(BookingStatusEnum.PENDING_CANCELATION);
         booking.setCancelationReason(request.getCancelationReason());
         bookingService.SaveAppointment(booking);
 
@@ -313,13 +313,12 @@ public class BookinController implements BookApi {
 
 
         Optional<Booking> appointment = bookingService.GetAppointmentById(id);
+
         if (!appointment.isPresent()) {
             throw new ResourceNotFoundException("The Appointmnet with the provided Id " + id + " is Not Found");
         }
 
-        ApplicationUser patient = appointment.get().getPatient();
-
-        if (appointment.get().getBookingStatus() == BookingStatusEnum.ATTENDED || appointment.get().getBookingStatus() == BookingStatusEnum.MISSED || appointment.get().getBookingStatus() == BookingStatusEnum.PENDING || appointment.get().getBookingStatus() == BookingStatusEnum.CANCELLED) {
+        if (appointment.get().getBookingStatus() == BookingStatusEnum.ATTENDED || appointment.get().getBookingStatus() == BookingStatusEnum.MISSED || appointment.get().getBookingStatus() == BookingStatusEnum.PENDING || appointment.get().getBookingStatus() == BookingStatusEnum.CANCELLED ) {
             throw new OperationFailedException("Sorry, You Can Only Update The Appointments That You Have Not Attended " + " Only And not The Appointments That YoU Missed To Attend And Cancelled Appoints");
         }
 
@@ -358,7 +357,11 @@ public class BookinController implements BookApi {
                                     booking.setAppointmentDate(updatedAppointmentDate);
                                     booking.setDoctor(doctor.get());
                                     booking.setPushed(false);
+                                    booking.setBookingStatus(BookingStatusEnum.PENDING_UPDATION);
                                     bookingService.SaveAppointment(booking);
+
+                                    //Update Queue
+                                    notificationService.SendBookingUpdateToQueue(booking);
                                     BookingResponseDto bookingResponseDto = commons.GenerateBookingResponseDto(booking);
                                     return ResponseEntity.ok(bookingResponseDto);
                                 } else {
@@ -375,7 +378,11 @@ public class BookinController implements BookApi {
                                     booking.setAppointmentDate(updatedAppointmentDate);
                                     booking.setDoctor(doctor.get());
                                     booking.setPushed(false);
+                                    booking.setBookingStatus(BookingStatusEnum.PENDING_UPDATION);
                                     bookingService.SaveAppointment(booking);
+
+                                    //Update Queue
+                                    notificationService.SendBookingUpdateToQueue(booking);
                                     BookingResponseDto bookingResponseDto = commons.GenerateBookingResponseDto(booking);
                                     return ResponseEntity.ok(bookingResponseDto);
                                 } else {
@@ -392,7 +399,11 @@ public class BookinController implements BookApi {
                                     booking.setAppointmentDate(updatedAppointmentDate);
                                     booking.setDoctor(doctor.get());
                                     booking.setPushed(false);
+                                    booking.setBookingStatus(BookingStatusEnum.PENDING_UPDATION);
                                     bookingService.SaveAppointment(booking);
+
+                                    //Update Queue
+                                    notificationService.SendBookingUpdateToQueue(booking);
                                     BookingResponseDto bookingResponseDto = commons.GenerateBookingResponseDto(booking);
                                     return ResponseEntity.ok(bookingResponseDto);
                                 } else {
@@ -409,7 +420,11 @@ public class BookinController implements BookApi {
                                     booking.setAppointmentDate(updatedAppointmentDate);
                                     booking.setDoctor(doctor.get());
                                     booking.setPushed(false);
+                                    booking.setBookingStatus(BookingStatusEnum.PENDING_UPDATION);
                                     bookingService.SaveAppointment(booking);
+
+                                    //Update Queue
+                                    notificationService.SendBookingUpdateToQueue(booking);
                                     BookingResponseDto bookingResponseDto = commons.GenerateBookingResponseDto(booking);
                                     return ResponseEntity.ok(bookingResponseDto);
                                 } else {
@@ -426,7 +441,11 @@ public class BookinController implements BookApi {
                                     booking.setAppointmentDate(updatedAppointmentDate);
                                     booking.setDoctor(doctor.get());
                                     booking.setPushed(false);
+                                    booking.setBookingStatus(BookingStatusEnum.PENDING_UPDATION);
                                     bookingService.SaveAppointment(booking);
+
+                                    //Update Queue
+                                    notificationService.SendBookingUpdateToQueue(booking);
                                     BookingResponseDto bookingResponseDto = commons.GenerateBookingResponseDto(booking);
                                     return ResponseEntity.ok(bookingResponseDto);
                                 } else {
@@ -474,7 +493,11 @@ public class BookinController implements BookApi {
                                     Booking booking = appointment.get();
                                     booking.setAppointmentDate(updatedAppointmentDate);
                                     booking.setPushed(false);
+                                    booking.setBookingStatus(BookingStatusEnum.PENDING_UPDATION);
                                     bookingService.SaveAppointment(booking);
+
+                                    //Update Queue
+                                    notificationService.SendBookingUpdateToQueue(booking);
                                     BookingResponseDto bookingResponseDto = commons.GenerateBookingResponseDto(booking);
                                     return ResponseEntity.ok(bookingResponseDto);
                                 } else {
@@ -490,7 +513,11 @@ public class BookinController implements BookApi {
                                     Booking booking = appointment.get();
                                     booking.setAppointmentDate(updatedAppointmentDate);
                                     booking.setPushed(false);
+                                    booking.setBookingStatus(BookingStatusEnum.PENDING_UPDATION);
                                     bookingService.SaveAppointment(booking);
+
+                                    //Update Queue
+                                    notificationService.SendBookingUpdateToQueue(booking);
                                     BookingResponseDto bookingResponseDto = commons.GenerateBookingResponseDto(booking);
                                     return ResponseEntity.ok(bookingResponseDto);
                                 } else {
@@ -506,7 +533,11 @@ public class BookinController implements BookApi {
                                     Booking booking = appointment.get();
                                     booking.setAppointmentDate(updatedAppointmentDate);
                                     booking.setPushed(false);
+                                    booking.setBookingStatus(BookingStatusEnum.PENDING_UPDATION);
                                     bookingService.SaveAppointment(booking);
+
+                                    //Update Queue
+                                    notificationService.SendBookingUpdateToQueue(booking);
                                     BookingResponseDto bookingResponseDto = commons.GenerateBookingResponseDto(booking);
                                     return ResponseEntity.ok(bookingResponseDto);
                                 } else {
@@ -522,7 +553,11 @@ public class BookinController implements BookApi {
                                     Booking booking = appointment.get();
                                     booking.setAppointmentDate(updatedAppointmentDate);
                                     booking.setPushed(false);
+                                    booking.setBookingStatus(BookingStatusEnum.PENDING_UPDATION);
                                     bookingService.SaveAppointment(booking);
+
+                                    //Update Queue
+                                    notificationService.SendBookingUpdateToQueue(booking);
                                     BookingResponseDto bookingResponseDto = commons.GenerateBookingResponseDto(booking);
                                     return ResponseEntity.ok(bookingResponseDto);
                                 } else {
@@ -538,7 +573,11 @@ public class BookinController implements BookApi {
                                     Booking booking = appointment.get();
                                     booking.setAppointmentDate(updatedAppointmentDate);
                                     booking.setPushed(false);
+                                    booking.setBookingStatus(BookingStatusEnum.PENDING_UPDATION);
                                     bookingService.SaveAppointment(booking);
+
+                                    //Update Queue
+                                    notificationService.SendBookingUpdateToQueue(booking);
                                     BookingResponseDto bookingResponseDto = commons.GenerateBookingResponseDto(booking);
                                     return ResponseEntity.ok(bookingResponseDto);
                                 } else {
@@ -591,7 +630,11 @@ public class BookinController implements BookApi {
                                     Booking booking = appointment.get();
                                     booking.setDoctor(doctor.get());
                                     booking.setPushed(false);
+                                    booking.setBookingStatus(BookingStatusEnum.PENDING_UPDATION);
                                     bookingService.SaveAppointment(booking);
+
+                                    //Update Queue
+                                    notificationService.SendBookingUpdateToQueue(booking);
                                     BookingResponseDto bookingResponseDto = commons.GenerateBookingResponseDto(booking);
                                     return ResponseEntity.ok(bookingResponseDto);
                                 } else {
@@ -607,7 +650,11 @@ public class BookinController implements BookApi {
                                     Booking booking = appointment.get();
                                     booking.setDoctor(doctor.get());
                                     booking.setPushed(false);
+                                    booking.setBookingStatus(BookingStatusEnum.PENDING_UPDATION);
                                     bookingService.SaveAppointment(booking);
+
+                                    //Update Queue
+                                    notificationService.SendBookingUpdateToQueue(booking);
                                     BookingResponseDto bookingResponseDto = commons.GenerateBookingResponseDto(booking);
                                     return ResponseEntity.ok(bookingResponseDto);
                                 } else {
@@ -623,7 +670,11 @@ public class BookinController implements BookApi {
                                     Booking booking = appointment.get();
                                     booking.setDoctor(doctor.get());
                                     booking.setPushed(false);
+                                    booking.setBookingStatus(BookingStatusEnum.PENDING_UPDATION);
                                     bookingService.SaveAppointment(booking);
+
+                                    //Update Queue
+                                    notificationService.SendBookingUpdateToQueue(booking);
                                     BookingResponseDto bookingResponseDto = commons.GenerateBookingResponseDto(booking);
                                     return ResponseEntity.ok(bookingResponseDto);
                                 } else {
@@ -639,7 +690,11 @@ public class BookinController implements BookApi {
                                     Booking booking = appointment.get();
                                     booking.setDoctor(doctor.get());
                                     booking.setPushed(false);
+                                    booking.setBookingStatus(BookingStatusEnum.PENDING_UPDATION);
                                     bookingService.SaveAppointment(booking);
+
+                                    //Update Queue
+                                    notificationService.SendBookingUpdateToQueue(booking);
                                     BookingResponseDto bookingResponseDto = commons.GenerateBookingResponseDto(booking);
                                     return ResponseEntity.ok(bookingResponseDto);
                                 } else {
@@ -655,7 +710,11 @@ public class BookinController implements BookApi {
                                     Booking booking = appointment.get();
                                     booking.setDoctor(doctor.get());
                                     booking.setPushed(false);
+                                    booking.setBookingStatus(BookingStatusEnum.PENDING_UPDATION);
                                     bookingService.SaveAppointment(booking);
+
+                                    //Update Queue
+                                    notificationService.SendBookingUpdateToQueue(booking);
                                     BookingResponseDto bookingResponseDto = commons.GenerateBookingResponseDto(booking);
                                     return ResponseEntity.ok(bookingResponseDto);
                                 } else {
