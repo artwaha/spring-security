@@ -29,5 +29,5 @@ public interface PatientApi {
 
     @ApiOperation(value = "View All Patient By Registration Number", notes = "View All Patient By Registration Number")
     @RequestMapping(value = "regno/", method = RequestMethod.GET, produces = "application/json")
-    ResponseEntity<PatientDto> GetPatientByRegistration(@RequestParam String regNo) throws ResourceNotFoundException, IOException, OperationFailedException;
+    ResponseEntity<PatientResponseDto> GetPatientByRegistration(@RequestParam String regNo) throws ResourceNotFoundException, IOException, OperationFailedException;
 }

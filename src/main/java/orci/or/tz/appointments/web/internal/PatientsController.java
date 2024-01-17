@@ -73,7 +73,7 @@ public class PatientsController implements PatientApi {
     }
 
     @Override
-    public ResponseEntity<PatientDto> GetPatientByRegistration(String regNo) throws ResourceNotFoundException, IOException, OperationFailedException {
+    public ResponseEntity<PatientResponseDto> GetPatientByRegistration(String regNo) throws ResourceNotFoundException, IOException, OperationFailedException {
         Optional<ApplicationUser> patientFromDB = patientService.GetPatientByRegistrationNumber(regNo);
 
         if (!patientFromDB.isPresent()) {
@@ -121,7 +121,7 @@ public class PatientsController implements PatientApi {
                     // Now save the patient in the database
                     patientService.SavePatient(patientToBeSavedInAppointmentDB);
 
-                    PatientDto patient = commons.GeneratePatientDTO(patientToBeSavedInAppointmentDB);
+                    PatientResponseDto patient = commons.GeneratePatient(patientToBeSavedInAppointmentDB);
                     return ResponseEntity.ok(patient);
 
                 } else if (codeValue == 404) {
@@ -134,7 +134,7 @@ public class PatientsController implements PatientApi {
         }else{
 
             ApplicationUser user = patientFromDB.get();
-            PatientDto patientDto = commons.GeneratePatientDTO(user);
+            PatientResponseDto patientDto = commons.GeneratePatient(user);
             return ResponseEntity.ok(patientDto);
 
         }

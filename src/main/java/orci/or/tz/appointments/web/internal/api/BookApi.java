@@ -39,6 +39,15 @@ public interface BookApi {
     @RequestMapping(value = "/resend", method = RequestMethod.POST, produces = "application/json")
     ResponseEntity<?> ResendToInaya(@RequestParam Long bookingId) throws ResourceNotFoundException;
 
+    @ApiOperation(value = "Resend Booking Cancelation To Inaya", notes = "Resend Booking Cancelation To Inaya")
+    @RequestMapping(value = "/resend/cancelation", method = RequestMethod.POST, produces = "application/json")
+    ResponseEntity<?> ResendBookingCancelation(@RequestParam Long bookingId) throws ResourceNotFoundException;
+
+
+    @ApiOperation(value = "Resend Booking Updating To Inaya", notes = "Resend Booking Updating To Inaya")
+    @RequestMapping(value = "/resend/updation", method = RequestMethod.POST, produces = "application/json")
+    ResponseEntity<?> ResendBookingUpdate(@RequestParam Long bookingId) throws ResourceNotFoundException;
+
     @ApiOperation(value = "Create an Appointment ", notes = "Create an Appointment ")
     @PostMapping(value = "", produces = "application/json", consumes = "application/json")
     ResponseEntity<BookingResponseDto> CreateAppointment(@Valid @RequestBody BookRequestDto bookingRequestDto) throws ResourceNotFoundException, IOException, OperationFailedException;
@@ -50,7 +59,7 @@ public interface BookApi {
 
     @ApiOperation(value = "Update User Appointment", notes = "Update User Appointment")
     @PutMapping(value = "/{id}", produces = "application/json")
-    ResponseEntity<BookingResponseDto> UpdateTheAppointmentDate(@PathVariable Long id, @RequestBody BookingUpdateDto bookingUpdateDto) throws ResourceNotFoundException, OperationFailedException,IOException;
+    ResponseEntity<BookingResponseDto> UpdateTheAppointmentDate(@PathVariable Long id, @RequestBody BookingUpdateDto bookingUpdateDto) throws ResourceNotFoundException, OperationFailedException, IOException;
 
 
 }

@@ -143,6 +143,32 @@ public class BookinController implements BookApi {
     }
 
     @Override
+    public ResponseEntity<?> ResendBookingCancelation(Long bookingId) throws ResourceNotFoundException {
+        Optional<Booking> booking = bookingService.GetAppointmentById(bookingId);
+
+        if (!booking.isPresent()) {
+            throw new ResourceNotFoundException("Booking with the ID is not Available");
+        }
+
+        notificationService.SendBookingCancelationToQueue(booking.get());
+        BookingResponseDto resp = commons.GenerateBookingResponseDto(booking.get());
+        return ResponseEntity.ok(resp);
+    }
+
+    @Override
+    public ResponseEntity<?> ResendBookingUpdate(Long bookingId) throws ResourceNotFoundException {
+        Optional<Booking> booking = bookingService.GetAppointmentById(bookingId);
+
+        if (!booking.isPresent()) {
+            throw new ResourceNotFoundException("Booking with the ID is not Available");
+        }
+
+        notificationService.SendBookingUpdateToQueue(booking.get());
+        BookingResponseDto resp = commons.GenerateBookingResponseDto(booking.get());
+        return ResponseEntity.ok(resp);
+    }
+
+    @Override
     public ResponseEntity<BookingResponseDto> CreateAppointment(BookRequestDto bookingRequestDto) throws ResourceNotFoundException, IOException, OperationFailedException {
         Optional<ApplicationUser> pat = patientService.GetPatientById(bookingRequestDto.getPatientId());
 
