@@ -7,5 +7,5 @@ import lombok.Data;
 @Data
 public class BookingRequestDto {
     private Long doctorId;
-    private LocalDate appointmenDate;
+    private LocalDate appointmentDate;
 }

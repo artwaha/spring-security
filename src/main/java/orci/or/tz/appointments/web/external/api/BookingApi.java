@@ -1,6 +1,5 @@
 package orci.or.tz.appointments.web.external.api;
 
-import com.rabbitmq.client.AMQP;
 import io.swagger.annotations.ApiOperation;
 import orci.or.tz.appointments.dto.booking.*;
 import orci.or.tz.appointments.enums.BookingStatusEnum;
@@ -21,66 +20,39 @@ public interface BookingApi {
 
     @ApiOperation(value = "Create an Appointment ", notes = "Create an Appointment ")
     @PostMapping(value = "", produces = "application/json", consumes = "application/json")
-    ResponseEntity<BookingResponseDto> createAppointment(@Valid @RequestBody BookingRequestDto bookingRequestDto)
-            throws ResourceNotFoundException, IOException, OperationFailedException;
+    ResponseEntity<BookingResponseDto> createAppointment(@Valid @RequestBody BookingRequestDto bookingRequestDto) throws ResourceNotFoundException, IOException, OperationFailedException;
 
     @ApiOperation(value = "Get Counts", notes = "Get Counts")
     @GetMapping(value = "/count", produces = "application/json")
     ResponseEntity<BookingCountDto> GetTotalCounts();
 
 
-    @ApiOperation(value = "Get User Appointments",
-            notes = "Get User Appointments")
+    @ApiOperation(value = "Get User Appointments", notes = "Get User Appointments")
     @GetMapping(value = "", produces = "application/json")
-    ResponseEntity<GenericResponse<List<BookingResponseDto>>> GetUserAppointments(
-            @RequestParam(defaultValue = "0", required = false) int page,
-            @RequestParam(defaultValue = "10", required = false) int size
-    ) ;
+    ResponseEntity<GenericResponse<List<BookingResponseDto>>> GetUserAppointments(@RequestParam(defaultValue = "0", required = false) int page, @RequestParam(defaultValue = "10", required = false) int size);
 
-    @ApiOperation(value = "Get User Appointments By Status",
-            notes = "Get User Appointments By Status")
+    @ApiOperation(value = "Get User Appointments By Status", notes = "Get User Appointments By Status")
     @GetMapping(value = "/status", produces = "application/json")
-    ResponseEntity<GenericResponse<List<BookingResponseDto>>> GetUserAppointmentsByStatus(
-            @RequestParam(defaultValue = "0", required = false) int page,
-            @RequestParam(defaultValue = "10", required = false) int size,
-            @RequestParam(required = false) BookingStatusEnum bookingStatus
-            ) ;
+    ResponseEntity<GenericResponse<List<BookingResponseDto>>> GetUserAppointmentsByStatus(@RequestParam(defaultValue = "0", required = false) int page, @RequestParam(defaultValue = "10", required = false) int size, @RequestParam(required = false) BookingStatusEnum bookingStatus);
 
-    @ApiOperation(value = "Get Appointments By Status and Date",
-            notes = "Get Appointments By Status and Date")
+    @ApiOperation(value = "Get Appointments By Status and Date", notes = "Get Appointments By Status and Date")
     @GetMapping(value = "status/date", produces = "application/json")
-    ResponseEntity<GenericResponse<List<BookingResponseDto>>> GetAllAppointmentsByStatusAndDate(
-            @RequestParam(defaultValue = "0", required = false) int page,
-            @RequestParam(defaultValue = "10", required = false) int size,
-            @RequestParam(required = false) LocalDate startDate,
-            @RequestParam(required = false) LocalDate endDate,
-            @RequestParam(required = false) BookingStatusEnum bookingStatus
-    ) ;
+    ResponseEntity<GenericResponse<List<BookingResponseDto>>> GetAllAppointmentsByStatusAndDate(@RequestParam(defaultValue = "0", required = false) int page, @RequestParam(defaultValue = "10", required = false) int size, @RequestParam(required = false) LocalDate startDate, @RequestParam(required = false) LocalDate endDate, @RequestParam(required = false) BookingStatusEnum bookingStatus);
 
 
-    @ApiOperation(value = "Search with Criterias",
-            notes = "Search With Ceiterias")
+    @ApiOperation(value = "Search with Criterias", notes = "Search With Ceiterias")
     @GetMapping(value = "/search", produces = "application/json")
-    ResponseEntity<GenericResponse<List<BookingResponseDto>>> SearchWithCriteria(
-            @RequestParam(defaultValue = "0", required = false) int page,
-            @RequestParam(defaultValue = "10", required = false) int size,
-            @RequestParam(required = false) LocalDate startDate,
-            @RequestParam(required = false) LocalDate endDate,
-            @RequestParam(required = false) BookingStatusEnum bookingStatus
-    ) ;
+    ResponseEntity<GenericResponse<List<BookingResponseDto>>> SearchWithCriteria(@RequestParam(defaultValue = "0", required = false) int page, @RequestParam(defaultValue = "10", required = false) int size, @RequestParam(required = false) LocalDate startDate, @RequestParam(required = false) LocalDate endDate, @RequestParam(required = false) BookingStatusEnum bookingStatus);
 
     // An Endpoint to Cancel The Appointments
     @ApiOperation(value = "Cancel Appointment", notes = "Cancel Appointment")
-    @PostMapping(value = "/cancel",consumes="application/json", produces = "application/json")
+    @PostMapping(value = "/cancel", consumes = "application/json", produces = "application/json")
     ResponseEntity<BookingResponseDto> CanCelAnAppointment(@RequestBody CancelDto request) throws ResourceNotFoundException, OperationFailedException;
 
     //An Endpoint to update the Appointment date
-    @ApiOperation(value = "Update User Appointment",
-            notes = "Update User Appointment")
+    @ApiOperation(value = "Update User Appointment", notes = "Update User Appointment")
     @PutMapping(value = "/{id}", produces = "application/json")
-    ResponseEntity<BookingResponseDto> UpdateTheAppointmentDate(@PathVariable Long id,
-                                                                @RequestBody BookingUpdateDto bookingUpdateDto) throws ResourceNotFoundException,
-            OperationFailedException, IOException;
+    ResponseEntity<BookingResponseDto> UpdateTheAppointmentDate(@PathVariable Long id, @RequestBody BookingUpdateDto bookingUpdateDto) throws ResourceNotFoundException, OperationFailedException, IOException;
 
     @ApiOperation(value = "Get An Appoint for the A specific logined Patient By Id", notes = "Get An Appoint for the A specific logined Patient By Id")
     @GetMapping(value = "/{id}", produces = "application/json")

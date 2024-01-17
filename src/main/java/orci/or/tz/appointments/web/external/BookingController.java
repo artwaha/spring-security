@@ -63,7 +63,7 @@ public class BookingController implements BookingApi {
         ApplicationUser patient = loggedUser.getInfo();
 
         Long doctorId = bookingRequestDto.getDoctorId();
-        LocalDate appontmentDate = bookingRequestDto.getAppointmenDate();
+        LocalDate appontmentDate = bookingRequestDto.getAppointmentDate();
         if (!dateValidator.isHoliday(appontmentDate)) {
             if (!dateValidator.isWeekend(appontmentDate)) {
                 // pass some logic to make the appointment
