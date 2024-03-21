@@ -1,5 +1,7 @@
-package com.example.Spring.Boot.tutorial.model;
+package com.example.Spring.Boot.tutorial.model.entities;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -22,9 +24,12 @@ public class Student {
     private String email;
     private Integer age;
 
-    @OneToOne(cascade = CascadeType.ALL)
+    @ManyToOne
+    @JoinColumn(name = "school_id")
+    @JsonBackReference
+    private School school;
+
+    @OneToOne(mappedBy = "student", cascade = CascadeType.ALL)
     private StudentProfile studentProfile;
 
-    @ManyToOne
-    private School school;
 }

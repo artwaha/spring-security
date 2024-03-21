@@ -1,6 +1,6 @@
 package com.example.Spring.Boot.tutorial.repository;
 
-import com.example.Spring.Boot.tutorial.model.Student;
+import com.example.Spring.Boot.tutorial.model.entities.Student;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.List;

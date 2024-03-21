@@ -1,4 +1,4 @@
-package com.example.Spring.Boot.tutorial.model;
+package com.example.Spring.Boot.tutorial.model.entities;
 
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -19,6 +19,8 @@ public class StudentProfile {
     private Long id;
     private String bio;
 
-    @OneToOne
+    @OneToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "student_id")
     private Student student;
+
 }

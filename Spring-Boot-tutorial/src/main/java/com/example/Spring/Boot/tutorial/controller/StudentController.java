@@ -1,7 +1,9 @@
 package com.example.Spring.Boot.tutorial.controller;
 
+import com.example.Spring.Boot.tutorial.Util;
+import com.example.Spring.Boot.tutorial.model.dto.StudentDTO;
+import com.example.Spring.Boot.tutorial.model.entities.Student;
 import com.example.Spring.Boot.tutorial.repository.StudentRepository;
-import com.example.Spring.Boot.tutorial.model.Student;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
@@ -10,12 +12,14 @@ import java.util.List;
 @RequestMapping("api/v1/students")
 @RestController
 @RequiredArgsConstructor
-public class Controller {
+public class StudentController {
     private final StudentRepository repository;
 
+
     @PostMapping
-    Student newStudent(@RequestBody Student student) {
-        return repository.save(student);
+    Student newStudent(@RequestBody StudentDTO studentDTO) {
+        Student newStudent = Util.studentDTOtoStudent(studentDTO);
+        return repository.save(newStudent);
     }
 
     @GetMapping
