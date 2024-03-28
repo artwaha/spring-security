@@ -1,6 +1,6 @@
 package com.atwaha.sis.components;
 
-import com.atwaha.sis.model.dto.ApiResponse;
+import com.atwaha.sis.model.dto.ErrorResponse;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
@@ -19,10 +19,10 @@ import java.util.Map;
 @RequiredArgsConstructor
 public class GlobalExceptionHandler {
     private final HttpServletRequest request;
-    private final UtilityMethods util;
+    private final Utils util;
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
-    public ResponseEntity<ApiResponse<?>> handleMethodArgumentNotValidException(MethodArgumentNotValidException exception) {
+    public ResponseEntity<ErrorResponse> handleMethodArgumentNotValidException(MethodArgumentNotValidException exception) {
         Map<String, String> errors = new HashMap<>();
         exception.getBindingResult().getAllErrors().forEach(error -> {
             String fieldName = ((FieldError) error).getField();
@@ -30,12 +30,12 @@ public class GlobalExceptionHandler {
             errors.put(fieldName, errorMessage);
         });
 
-        ApiResponse<?> response = util.generateErrorResponse(HttpStatus.BAD_REQUEST, request.getRequestURI(), "Invalid Method Arguments", errors);
+        ErrorResponse response = util.generateErrorResponse(HttpStatus.BAD_REQUEST, request.getRequestURI(), "Invalid Method Arguments", errors);
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
     }
 
     @ExceptionHandler(MethodArgumentTypeMismatchException.class)
-    public ResponseEntity<ApiResponse<?>> handleMethodArgumentTypeMismatchException(MethodArgumentTypeMismatchException exception) {
+    public ResponseEntity<ErrorResponse> handleMethodArgumentTypeMismatchException(MethodArgumentTypeMismatchException exception) {
         Class<?> requiredType = exception.getRequiredType();
         Object value = exception.getValue();
 
@@ -47,13 +47,19 @@ public class GlobalExceptionHandler {
         String message = "Invalid argument type for " + exception.getName();
         String path = request.getRequestURI();
 
-        ApiResponse<?> response = util.generateErrorResponse(HttpStatus.BAD_REQUEST, path, message, errors);
+        ErrorResponse response = util.generateErrorResponse(HttpStatus.BAD_REQUEST, path, message, errors);
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
     }
 
     @ExceptionHandler(EntityNotFoundException.class)
-    public ResponseEntity<ApiResponse<?>> handleEntityNotFoundException(EntityNotFoundException exception) {
-        ApiResponse<?> response = util.generateErrorResponse(HttpStatus.NOT_FOUND, request.getRequestURI(), exception.getMessage(), null);
+    public ResponseEntity<ErrorResponse> handleEntityNotFoundException(EntityNotFoundException exception) {
+        ErrorResponse response = util.generateErrorResponse(HttpStatus.NOT_FOUND, request.getRequestURI(), exception.getMessage(), null);
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
+    }
+
+    @ExceptionHandler(Exception.class)
+    public ResponseEntity<ErrorResponse> handleOtherExceptions(Exception exception) {
+        ErrorResponse response = util.generateErrorResponse(HttpStatus.BAD_REQUEST, request.getRequestURI(), exception.getMessage(), null);
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
     }
 }

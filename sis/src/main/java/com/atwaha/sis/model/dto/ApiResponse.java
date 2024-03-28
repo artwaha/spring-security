@@ -1,12 +1,10 @@
 package com.atwaha.sis.model.dto;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.springframework.http.HttpStatus;
 
 @Data
 @Builder
@@ -15,11 +13,6 @@ import org.springframework.http.HttpStatus;
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class ApiResponse<T> {
-    private String path;
-    private HttpStatus status;
-    @JsonProperty("status-code")
-    private int statusCode;
-
+    private int status;
     private T data;
-    private ErrorResponse error;
 }

@@ -1,3 +1,23 @@
 spring:
-    application:
-        name: Spring Boot GraphQL Demo
+  application:
+    name: Spring Boot GraphQL Demo
+  datasource:
+    driver-class-name: org.h2.Driver
+    url: jdbc:h2:file:./h2-database/demo-db
+    username: abdul-razak
+    password: 206207
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+    properties:
+      hibernate:
+        format_sql: true
+  graphql:
+    graphiql:
+      enabled: true
+
+  security:
+    user:
+      name: admin
+      password: admin

@@ -1,4 +1,8 @@
 package com.artwaha.springraphql.repository;
 
-public interface BookRepository extends org.springframework.data.jpa.repository.JpaRepository<com.artwaha.springraphql.model.Book, java.lang.Long> {
+import com.artwaha.springraphql.model.Book;
+import org.springframework.data.jpa.repository.JpaRepository;
+
+public interface BookRepository extends JpaRepository<Book, Long> {
+    boolean existsByTitleIgnoreCase(String title);
 }

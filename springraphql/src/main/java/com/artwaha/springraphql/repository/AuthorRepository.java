@@ -1,4 +1,8 @@
 package com.artwaha.springraphql.repository;
 
-public interface AuthorRepository extends org.springframework.data.jpa.repository.JpaRepository<com.artwaha.springraphql.model.Author, java.lang.Long> {
+import com.artwaha.springraphql.model.Author;
+import org.springframework.data.jpa.repository.JpaRepository;
+
+public interface AuthorRepository extends JpaRepository<Author, Long> {
+    boolean existsByNameIgnoreCase(String name);
 }

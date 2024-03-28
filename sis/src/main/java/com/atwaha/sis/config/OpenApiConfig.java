@@ -5,7 +5,6 @@ import io.swagger.v3.oas.annotations.OpenAPIDefinition;
 import io.swagger.v3.oas.annotations.enums.SecuritySchemeType;
 import io.swagger.v3.oas.annotations.info.Contact;
 import io.swagger.v3.oas.annotations.info.Info;
-import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.security.SecurityScheme;
 import io.swagger.v3.oas.annotations.servers.Server;
 
@@ -29,13 +28,15 @@ import io.swagger.v3.oas.annotations.servers.Server;
                         url = "http://192.168.1.8",
                         description = "Production Server"
                 )
-        },
-        security = {
-                @SecurityRequirement(name = "JWT - Bearer Authentication")
         }
+//        security = {
+//                /* Define here if you want to implement this for all end-points */
+//                /* For controller lever requirements, add this line below to individual controllers or METHOD level */
+//                @SecurityRequirement(name = "JWT")
+//        }
 )
 @SecurityScheme(
-        name = "JWT - Bearer Authentication",
+        name = "JWT",
         scheme = "bearer",
         type = SecuritySchemeType.HTTP
 )
