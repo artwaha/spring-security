@@ -33,6 +33,8 @@ public class AuthService {
 
         String accessToken = jwtService.generateToken(savedUser, utils.getExtraClaims(savedUser));
 
+        utils.saveUserToken(accessToken, savedUser);
+
         return AuthResponse
                 .builder()
                 .token(accessToken)
@@ -46,6 +48,9 @@ public class AuthService {
                 );
         User user = userRepository.findByEmailIgnoreCase(loginRequest.getEmail()).orElseThrow(() -> new UsernameNotFoundException("User Not Found"));
         String accessToken = jwtService.generateToken(user, utils.getExtraClaims(user));
+
+        utils.revokeAllUserTokens(user);
+        utils.saveUserToken(accessToken, user);
 
         return AuthResponse
                 .builder()

@@ -1,9 +1,11 @@
 package com.atwaha.springsecurity.security;
 
+import com.atwaha.springsecurity.repository.TokenRepository;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
@@ -15,7 +17,9 @@ import java.util.Map;
 import java.util.function.Function;
 
 @Service
+@RequiredArgsConstructor
 public class JwtService {
+    private final TokenRepository tokenRepository;
     @Value("${jwt.token.secret-key}")
     private String secretKey;
     @Value("${jwt.token.expiration-time}")
@@ -48,7 +52,8 @@ public class JwtService {
 
     public boolean isTokenValid(String token, UserDetails userDetails) {
         String username = extractUsername(token);
-        return (username.equals(userDetails.getUsername())) && !isTokenExpired(token);
+        boolean isTokenRevoked = tokenRepository.existsByTokenAndRevokedTrue(token);
+        return (username.equals(userDetails.getUsername())) && !isTokenExpired(token) && !isTokenRevoked;
     }
 
     private boolean isTokenExpired(String token) {

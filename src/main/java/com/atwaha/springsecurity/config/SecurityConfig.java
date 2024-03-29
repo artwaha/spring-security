@@ -1,10 +1,13 @@
 package com.atwaha.springsecurity.config;
 
 import com.atwaha.springsecurity.security.CustomAccessDeniedHandler;
+import com.atwaha.springsecurity.security.CustomLogoutHandler;
 import com.atwaha.springsecurity.security.JwtAuthenticationFilter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.data.jpa.repository.config.EnableJpaAuditing;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -26,6 +29,7 @@ import static org.springframework.http.HttpStatus.UNAUTHORIZED;
 public class SecurityConfig {
     private final JwtAuthenticationFilter jwtAuthenticationFilter;
     private final CustomAccessDeniedHandler accessDeniedHandler;
+    private final CustomLogoutHandler logoutHandler;
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
@@ -66,6 +70,13 @@ public class SecurityConfig {
 
         http.addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
 
+        http.logout(logout -> {
+            logout.logoutUrl("/api/v1/auth/logout");
+            logout.addLogoutHandler(logoutHandler);
+            logout.logoutSuccessHandler((request, response, authentication) -> {
+                response.setStatus(HttpStatus.OK.value());
+            });
+        });
 
         return http.build();
     }
