@@ -1,0 +1,25 @@
+spring:
+  application:
+    name: Spring Security Demo Project
+  datasource:
+    driver-class-name: org.h2.Driver
+    url: jdbc:h2:file:./h2-database/spring-security-db
+    username: abdul-razak
+    password: 206207
+  jpa:
+    hibernate:
+      ddl-auto: create-drop
+    show-sql: true
+    properties:
+      hibernate:
+        format_sql: true
+  h2:
+    console:
+      enabled: true
+
+# Custom Properties
+jwt:
+  token:
+    secret-key: 2bb80d537b1da3e38bd30361aa855686bde0eacd7162fef6a25fe97bf527a25b
+    expiration-time: 86400000
+
