@@ -2,11 +2,11 @@ package com.atwaha.springsecurity.config;
 
 import com.atwaha.springsecurity.security.CustomAccessDeniedHandler;
 import com.atwaha.springsecurity.security.CustomLogoutHandler;
+import com.atwaha.springsecurity.security.CustomUserDetailsService;
 import com.atwaha.springsecurity.security.JwtAuthenticationFilter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.data.jpa.repository.config.EnableJpaAuditing;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
@@ -30,6 +30,7 @@ public class SecurityConfig {
     private final JwtAuthenticationFilter jwtAuthenticationFilter;
     private final CustomAccessDeniedHandler accessDeniedHandler;
     private final CustomLogoutHandler logoutHandler;
+    private final CustomUserDetailsService userDetailsService;
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
@@ -37,7 +38,6 @@ public class SecurityConfig {
 
         /* This is for H2 Database Console */
         http.headers(headers -> headers.frameOptions(HeadersConfigurer.FrameOptionsConfig::sameOrigin));
-
         http.authorizeHttpRequests(
                 requests -> {
                     requests
@@ -51,11 +51,7 @@ public class SecurityConfig {
                             .authenticated();
                 }
         );
-
-        /* This is optional since UserDetailsServiceImpl is a Bean that already implements UserDetails Service
-         * So spring will scan and will know that it should use that Bean */
-//        http.userDetailsService(userDetailsService);
-
+        http.userDetailsService(userDetailsService);
         http.sessionManagement(session -> {
             session.sessionCreationPolicy(SessionCreationPolicy.STATELESS);
         });
@@ -67,9 +63,6 @@ public class SecurityConfig {
 
             });
         });
-
-        http.addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
-
         http.logout(logout -> {
             logout.logoutUrl("/api/v1/auth/logout");
             logout.addLogoutHandler(logoutHandler);
@@ -77,6 +70,7 @@ public class SecurityConfig {
                 response.setStatus(HttpStatus.OK.value());
             });
         });
+        http.addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
     }
