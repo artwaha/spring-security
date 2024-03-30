@@ -51,7 +51,7 @@ public class SecurityConfig {
                             .authenticated();
                 }
         );
-        http.userDetailsService(userDetailsService);
+//        http.userDetailsService(userDetailsService);
         http.sessionManagement(session -> {
             session.sessionCreationPolicy(SessionCreationPolicy.STATELESS);
         });
